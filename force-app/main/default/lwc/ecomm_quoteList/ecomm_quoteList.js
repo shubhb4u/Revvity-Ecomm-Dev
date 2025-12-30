@@ -1,4 +1,3 @@
-
 import { LightningElement, track, api } from 'lwc';
 
 export default class Ecomm_quoteList extends LightningElement {
@@ -41,13 +40,22 @@ export default class Ecomm_quoteList extends LightningElement {
     @api itemsPerPageOptions = [5, 10, 20, 50, 100];
     enablePagination = true;
 
-    get hasRecords() {
-        return this.records.length > 0;
-    }
-
     // PAGINATION PROPERTY - CHECK WEATHER PAGINATION NEEDS TO SHOW OR NOT
     get showPaginator() {
         return this.enablePagination && this.hasRecords;
+    }
+
+    get hasRecords() {
+        this.totalRecords = this.calculatedQuotes.length;
+        return this.calculatedQuotes.length > 0;
+    }
+
+    // PAGINATION PROPERTY - CALCULATE AND RETURN RECORDS TO DISPLAY
+    get recordsToDisplay() {
+        let from = (this.pageNumber - 1) * this.pageSize;
+        let to = this.pageSize * this.pageNumber;
+
+        return this.calculatedQuotes?.slice(from, to);
     }
 
     // WILL AUTOMATICALLY CALLED FROM PAGINATOR ON PAGE NUMBER OR SIZE CHANGE
