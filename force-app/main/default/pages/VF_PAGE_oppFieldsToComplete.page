@@ -1,0 +1,15 @@
+<apex:page controller="OPP_FieldsToComplete_Controller" action="{!showOpp}">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection title="Fields To Complete" collapsible="false" />     
+            <apex:pageBlockTable value="{!opportunities}" var="a">
+                <apex:column headerValue="CURRENT STAGE:">
+                    <apex:outputText value="{!a.fxMissingFieldsstageCurrent__c}" style="white-space:pre-wrap;" escape="false"/>
+                </apex:column>
+                <apex:column headerValue="ALL STAGES:">
+                    <apex:outputText value="{!a.fxMissingFieldsstageAll__c}" style="white-space:pre-wrap;" escape="false"/>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

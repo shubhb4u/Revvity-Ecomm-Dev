@@ -1,0 +1,268 @@
+<template>
+    <h1 class="header">Estimate</h1>
+    <template if:true={workOrderData}>
+            <table class="styled-table">
+                <thead>
+                    <template for:each={translationRecord} for:item="tr">
+                        <tr key={tr.Id}>
+                            <th>{tr.estimateNumber}</th>
+                            <th>{tr.activityCode}</th>
+                            <th>{tr.billingType}</th>
+                            <th>{tr.requiredStartDate}</th>
+                            <th>{tr.model}</th>
+                            <th>{tr.serialNumber}</th>
+                        </tr>
+                    </template>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{workOrderData.workOrderNumber}</td>
+                        <td>{workOrderData.activityCode}</td>
+                        <td>{workOrderData.billingType}</td>
+                        <td>{workOrderData.requestedStartDate}</td>
+                        <td>{workOrderData.model}</td>
+                        <td>{workOrderData.serialNumber}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--Second table-->
+            <table class="styled-table">
+                <thead>
+                    <template for:each={translationRecord} for:item="tr">
+                        <tr key={tr.Id}>
+                            <th>{tr.resourceName}</th>
+                            <th>{tr.contractNumber}</th>
+                            <th>{tr.contractExpiryDate}</th>
+                            <th>{tr.eqipomentNumber}</th>
+                            <th>{tr.systemId}</th>
+                        </tr>
+                    </template>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{workOrderData.serviceRepresentativeName}</td>
+                        <td>{workOrderData.contractNumber}</td>
+                        <td>{workOrderData.expiryDate}</td>
+                        <td>{workOrderData.equipmentID}</td>
+                        <td>{workOrderData.systemID}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--Third table-->
+            <table class="styled-table">
+                <thead>
+                    <template for:each={translationRecord} for:item="tr">
+                        <tr key={tr.Id}>
+                        <th>{tr.udiNumber}</th>
+                        <th>{tr.estimateExpiryDate}</th>
+                    </tr>
+                    </template>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{workOrderData.assetUDINum}</td>
+                        <td>{workOrderData.estimateExpiryDate}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--Fourth table-->
+            <table class="styled-table">
+                <thead>
+                    <template for:each={translationRecord} for:item="tr">
+                        <tr key={tr.Id}>
+                            <th>{tr.equipmentLoc}</th>
+                            <th>{tr.billToName}</th>
+                        </tr>
+                    </template>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center;">
+                            <p><lightning-formatted-text value={workOrderData.equipmentLocationName}></lightning-formatted-text>
+                            </p>
+                            <p> {workOrderData.equipmentLocationStreet}
+                                {workOrderData.equipmentLocationCity}
+                                {workOrderData.equipmentLocationState}
+                                {workOrderData.equipmentLocationZip}
+                                {workOrderData.equipmentLocationCountry}
+                            </p>
+                        </td>
+                        <td style="text-align: center;">
+                            <p><lightning-formatted-text value={workOrderData.billToCustomerName}></lightning-formatted-text>
+                            </p>
+                            <p><lightning-formatted-text value={workOrderData.billToCustomerAddress}></lightning-formatted-text>
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--Fifth table-->
+            <table class="styled-table">
+                <thead>
+                    <template for:each={translationRecord} for:item="tr">
+                        <tr key={tr.id}>
+                            <th>{tr.customerName}</th>
+                            <th>{tr.phoneNumber}</th>
+                            <th>{tr.faxNumber}</th>
+                            <th>{tr.email}</th>
+                            <th>{tr.purchaseOrder}</th>
+                        </tr>
+                    </template>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{workOrderData.contactName}</td>
+                        <td>{workOrderData.contactPhone}</td>
+                        <td>{workOrderData.contactFax}</td>
+                        <td>{workOrderData.contactEmail}</td>
+                        <td>{workOrderData.purchaseOrder}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="slds-m-top_x-large">
+                <!--Sixth Table-->
+                <table class="styled-table">
+                    <thead>
+                        <template for:each={translationRecord} for:item="tr">
+                            <tr key={tr.id}>
+                                <th>{tr.workDesc}</th>
+                            </tr>
+                        </template>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="formatted-text">{workOrderData.estimateDescription}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="slds-m-top_x-large">
+                <!--7th Table Labor/travel deatils-->
+                <table class="styled-table">
+                    <thead>
+                        <template for:each={translationRecord} for:item="tr">
+                            <tr key={tr.id}>
+                                <th colspan="6">{tr.laborTravelDetails}</th>
+                            </tr>
+                            <tr key={tr.id}>
+                                <th>{tr.partNumber}</th>
+                                <th>{tr.partDesc}</th>
+                                <th>{tr.quantity}</th>
+                                <template lwc:if={isWithPricing}>
+                                    <th>{tr.unitPrice}</th>
+                                    <th>{tr.discount}</th>
+                                    <th>{tr.totalPrice}</th>
+                                </template>
+                        </tr>
+                        </template>
+                    </thead>
+                    <tbody>
+                        <template for:each={laborTravelWoliList} for:item="item">
+                            <tr key={item.Id}>
+                                <td>{item.PartNumber}</td>
+                                <td>{item.MaterialPartDesc}</td>
+                                <td>{item.LaborTravelQty}</td>
+                                <template lwc:if={isWithPricing}>
+                                    <template lwc:if={item.IsFullLaborTravelDiscounts}>
+                                        <td>0</td>
+                                    </template>
+                                    <template lwc:else>
+                                        <td>{item.LaborUnitPrice}</td>
+                                    </template>
+                                    <td>{item.LaborDiscount}</td>
+                                    <td>{item.LaborTotalprice}</td>
+                                </template>
+                            </tr>
+                            <template for:each={translationRecord} for:item="tr">
+                                <tr key={tr.id}>
+                                    <td colspan="6" style="text-align: center; font-weight: bold; background-color: #f2f2f2;">{tr.workDesc}</td>
+                                </tr>
+                            </template>
+                            <tr key={item.Id}>
+                                <td colspan="6">{item.LaborDescription}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            <!--8th Table Part-->
+            <div class="slds-m-top_x-large">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th colspan="7">Expected Materials</th>
+                        </tr>
+                        <template for:each={translationRecord} for:item="tr">
+                            <tr key={tr.id}>
+                                <th>{tr.partNumber}</th>
+                                <th>{tr.partDesc}</th>
+                                <th>{tr.quantity}</th>
+                                <template lwc:if={isWithPricing}>
+                                    <th>{tr.unitPrice}</th>
+                                    <th>{tr.discount}</th>
+                                    <th>{tr.totalPrice}</th>
+                                </template>
+                            </tr>
+                        </template>
+                    </thead>
+                    <tbody>
+                        <template for:each={partsWoliList} for:item="part">
+                            <tr key={part.Id}>
+                                <td>{part.PartNumber}</td>
+                                <td>{part.MaterialPartDesc}</td>
+                                <td>{part.MaterialQty}</td>
+                                <template lwc:if={isWithPricing}>
+                                    <template lwc:if={part.IsFullContractDiscoutParts}>
+                                        <td>0</td>
+                                    </template>
+                                    <template lwc:else>
+                                        <td>{part.UnitPrice}</td>
+                                    </template>
+                                    <td>{part.Discount}</td>
+                                    <td>{part.Totalprice}</td>
+                                </template>
+                            </tr>
+                            <template for:each={translationRecord} for:item="tr">
+                                <tr key={tr.Id}>
+                                    <td colspan="7" style="text-align: center; font-weight: bold; background-color: #f2f2f2;">{tr.workDesc}</td>
+                                </tr>
+                            </template>
+                            <tr key={part.Id}>
+                                <td colspan="7">{part.WorkDescription}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            <!--9th Table total discount-->
+            <template lwc:if={isDiscount}>
+                <div class="slds-m-top_xx-large">
+                    <table class="styled-table-two">
+                        <tbody>
+                            <template for:each={translationRecord} for:item="tr">
+                                <tr key={tr.id}>
+                                    <th>{tr.totalDiscount}</th>
+                                    <td>{formattedTotalDiscount}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+            <!--10th Table final price-->
+            <template lwc:if={isWithPricing}>
+                <div class="slds-m-top_xx-large">
+                    <table class="styled-table-two">
+                        <tbody>
+                            <template for:each={translationRecord} for:item="tr">
+                                <tr key={tr.id}>
+                                    <th>{tr.totalAmountBeforeTax}</th>
+                                    <td>{formattedTotalAmount}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+        </template>
+</template>

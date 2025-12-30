@@ -1,0 +1,51 @@
+<template>
+    <template lwc:if={customerTechnicianDetails}>
+        <div class="slds-grid slds-wrap slds-gutters">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                <table class="styled-table">
+                    <tbody>
+                        <template for:each={translationRecord} for:item="tr">
+                            <tr key={tr.Id}>
+                                <th>{tr.customerSignature}</th>
+                                <td>
+                                    <lightning-formatted-rich-text
+                                        value={customerTechnicianDetails.Customer__c.value}></lightning-formatted-rich-text>
+                                </td>
+                            </tr>
+                            <tr key={tr.Id}>
+                                <th>{tr.customerName}</th>
+                                <td>{customerTechnicianDetails.Logged_In_Customer_Name__c.value}</td>
+                            </tr>
+                            <tr key={tr.Id}>
+                                <th>{tr.email}</th>
+                                <td>{customerTechnicianDetails.Logged_In_Customer_Email__c.value}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                <table class="styled-table">
+                    <tbody>
+                        <template for:each={translationRecord} for:item="tr">
+                            <tr key={tr.Id}>
+                                <th>{tr.technicianSignature}</th>
+                                <td><lightning-formatted-rich-text
+                                        value={customerTechnicianDetails.Technician__c.value}></lightning-formatted-rich-text>
+                                </td>
+                            </tr>
+                            <tr key={tr.Id}>
+                                <th>{tr.technicianName}</th>
+                                <td>{customerTechnicianDetails.Logged_In_Technician_Name__c.value}</td>
+                            </tr>
+                            <tr key={tr.Id}>
+                                <th>{tr.email}</th>
+                                <td>{customerTechnicianDetails.Logged_In_Technician_Email__c.value}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+</template>

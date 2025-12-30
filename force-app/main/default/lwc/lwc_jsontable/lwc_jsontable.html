@@ -1,0 +1,157 @@
+<template>
+    <lightning-card title="JSON Editor">
+        <lightning-tabset variant="scoped" active-tab-value={activetabContent}>
+            <lightning-tab label="Summary" value="summary"  data-tabname="summary" onactive={handleactivetab} icon-name="standard:code_set">
+               <template if:true={summarydetail}>
+                <lightning-datatable
+                key-field="id"
+                hide-checkbox-column="true"
+                data={summarydetail.data}
+                columns={summarydetail.columns}
+                onsave={handleSave}
+                draft-values={draft}>
+            </lightning-datatable>
+        </template>
+            </lightning-tab>
+            <lightning-tab label="Items" value="items"  data-tabname="items" onactive={handleactivetab} icon-name="standard:budget">
+                <template if:true={items}>
+                <lightning-datatable
+                key-field="id"
+                hide-checkbox-column="true"
+                data={items.data}
+                columns={items.columns}
+                onsave={handleSave}
+                draft-values={draft}>
+            </lightning-datatable>
+            </template>
+            </lightning-tab>
+            <lightning-tab label="Address" value="address"  data-tabname="items" onactive={handleactivetab} icon-name="standard:store_group">
+			<table style="width: 100%;" class="slds-table slds-table_bordered slds-table_striped slds-table_fixed-layout">
+			<thead>
+            <tr>
+			<th style="width: 10%;"></th>
+			<th style="width: 45%;" class="slds-p-around_medium">
+                <div style="align-items: center;" class="slds-grid">
+                        <span>Select Customer</span>
+                        <lightning-helptext content="Customer Number--[Sales org] Customer Name (Customer Address)[VAT]"></lightning-helptext>
+                    </div>
+                </th>
+			<th style="width: 45%;" class="slds-p-around_medium">
+                <div style="align-items: center;" class="slds-grid">
+                    <span>Orignal Value </span>
+                    <lightning-helptext content="Customer Number--[Sales org] Customer Name (Customer Address)[VAT]/Source"></lightning-helptext>
+                    
+                </div>
+            </th>
+			</tr>
+            </thead>
+            <tbody class="slds-text-body_small">
+			<tr>
+			<td style="width: 10%;"><b>Sold To</b></td>
+			<td style="width: 45%; word-wrap: break-word; overflow-wrap: break-word; text-wrap: initial" class="slds-wrap"><template if:true={soldtofilterlogic}>
+                                <lightning-record-picker
+                                label="Choose a Record"
+                                class="slds-m-top_large"
+                                placeholder="Search with customer name/address..."
+                                object-api-name="ERP_Address__c"
+                                filter={soldtofilterlogic}
+                                value={selectedsoldtoid}
+                                display-info={displayinfo}
+                                matching-info={matchinginfo}
+                                variant="label-hidden"
+                                onchange={handlesoldtochange}>
+                                </lightning-record-picker>
+                            </template>
+							<span>{soldtocustomername}<br>{soldtofulladdress}</span>
+			</td>
+			<td style="width: 45%; word-wrap: break-word; overflow-wrap: break-word;" class="slds-text-longword-break slds-wrap"><template if:true={soldto}>
+                                <template for:each={soldto.data} for:item="tab" for:index="Ind">
+                                    <lightning-card key={tab.Id} style="text-wrap: initial">
+                                      <b>&bull;</b> {tab.customerNumber}--[{tab.salesOrg}] {tab.fxFinalCustomerName} ({tab.fxFinalCustomerAddress})[{tab.vatNumber}]/{tab.source}
+                                    </lightning-card>
+                                    </template>
+                                </template>
+			</td>
+			</tr>
+			<tr>
+			<td style="width: 10%;"><b>Ship To</b></td>
+			<td style="width: 45%; word-wrap: break-word; overflow-wrap: break-word; text-wrap: initial" class="slds-wrap"> <template if:true={selectedsoldtomaster}>
+                                <lightning-radio-group
+								label="Ship To"
+								options={shipToOptions}
+								value={shiptocustomernumber}
+								class="slds-m-around_x-small"
+                                variant="label-hidden"
+                                onchange={handleChange}
+								>
+								</lightning-radio-group>
+                            </template>
+                            <br>
+                               <!-- <span>{shiptocustomername}<br>{shiptofulladdress}</span> -->
+			</td>
+			<td style="width: 45%; word-wrap: break-word; overflow-wrap: break-word;" class="slds-text-longword-break"> <template if:true={shipto}>
+                                <template  for:each={shipto.data} for:item="tab" for:index="Ind">
+                                    <lightning-card key={tab.Id} style="text-wrap: initial">
+                                        <b>&bull;</b> {tab.customerNumber}--[{tab.salesOrg}] {tab.fxFinalCustomerName} ({tab.fxFinalCustomerAddress})[{tab.vatNumber}]/{tab.source}
+                                    </lightning-card>
+                                    </template>
+                                </template>  
+			</td>
+			</tr>
+			<tr>
+			<td style="width: 10%;"><b>Bill To</b></td>
+			<td style="width: 45%; word-wrap: break-word; overflow-wrap: break-word; text-wrap: initial" class="slds-wrap"> <template if:true={selectedsoldtomaster}>
+                                <lightning-radio-group
+								label="Bill To"
+								options={billToOptions}
+								value={billtocustomernumber}
+								class="slds-m-around_x-small"
+                                variant="label-hidden"
+                                onchange={handleChange}
+								>
+								</lightning-radio-group>
+                                </template>
+                                <br>
+                               <!-- <span>{billtocustomername}<br>{billtofulladdress}</span> -->
+			</td>
+			<td style="width: 45%; word-wrap: break-word; overflow-wrap: break-word;" class="slds-text-longword-break slds-wrap"> <template if:true={billto}>
+                                <template for:each={billto.data} for:item="tab" for:index="Ind">
+                                    <lightning-card key={tab.Id} style="text-wrap: initial">
+                                        <b>&bull;</b> {tab.customerNumber}--[{tab.salesOrg}] {tab.fxFinalCustomerName} ({tab.fxFinalCustomerAddress})[{tab.vatNumber}]/{tab.source}
+                                    </lightning-card>
+                                    </template> 
+                                </template>
+			</td>
+			</tr>
+			<tr>
+			<td style="width: 10%;"><b>Payer</b></td>
+			<td style="width: 45%; text-wrap: initial" class="slds-wrap"> <template if:true={selectedsoldtomaster}>
+                                <lightning-radio-group
+								label="Payer"
+								options={payerOptions}
+								value={payercustomernumber}
+								class="slds-m-around_x-small"
+                                variant="label-hidden"
+                                onchange={handleChange}
+								>
+								</lightning-radio-group>
+                                </template>
+                                <br>
+                               <!-- <span>{payercustomername}<br>{payerfulladdress}</span> -->
+			</td>
+			<td style="width: 45%;" class="slds-text-longword-break slds-wrap"> <template if:true={payer}>
+                                  <template for:each={payer.data} for:item="tab" for:index="Ind">
+                                    <lightning-card key={tab.Id} style="text-wrap: initial">
+                                        <b>&bull;</b> {tab.customerNumber}--[{tab.salesOrg}] {tab.fxFinalCustomerName} ({tab.fxFinalCustomerAddress})[{tab.vatNumber}]/{tab.source}
+                                    </lightning-card>
+                                    </template> 
+                                </template>
+			</td>
+			</tr>
+            </tbody>
+			</table>
+            </lightning-tab>   
+        </lightning-tabset> 
+
+    </lightning-card>
+</template>

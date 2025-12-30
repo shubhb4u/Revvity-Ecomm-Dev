@@ -1,0 +1,50 @@
+/* .table-container{
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.table-wrapper{
+    flex : 1;
+    min-width:0;
+} */
+
+/* .signature-container{
+    max-width: 100px;
+    overflow: auto;
+    padding: 0.5rem;
+} */
+
+.styled-table {
+    /* width: 100%; */
+    table-layout: fixed;
+    /* height: fit-content; */
+    border-collapse: collapse;
+    /* border-spacing: 10px; */
+    /* border-collapse: collapse; */
+}
+
+.styled-table td{
+    border: 1px solid black;
+    padding: 2px 6px;
+    line-height: 1;
+    text-align: left;
+    height: 1px;
+    font-size: 8px;
+}
+
+.styled-table th{
+    background-color: #f2f2f2;
+    border: 1px solid black;
+    padding: 2px 6px;
+    line-height: 1;
+    text-align: center;
+    height: 1px;
+    font-size: 8px;
+    /* width: 50px; */
+}
+
+.styled-table tr {
+    margin: 0;
+    padding: 0;
+}

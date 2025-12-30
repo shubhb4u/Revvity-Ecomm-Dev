@@ -1,0 +1,9 @@
+<aura:component implements="lightning:actionOverride" access="global" controller="InteractionOverrideNewButtonController">
+        
+    <aura:attribute name="legacyCreatePermission" type="boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.changeUserEntity}"
+                  description="override new interaction button when this comp onloads"/>
+    
+    
+</aura:component>

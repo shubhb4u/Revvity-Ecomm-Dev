@@ -1,0 +1,38 @@
+<!-- lightning navigation ex -->
+<aura:component implements="flexiPage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" access="global"
+    controller="chatterGroupControllerAura">
+
+    <aura:attribute name="chatterGroups" type="List" />
+    <!-- <aura:attribute name="trendingChatterGrps" type="CollaborationGroup"/> -->
+    
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!--displaying Chatter Groups -->
+    <div class="slds-box">
+        <div class="c-container">
+            <h1 class="header-bg"> <b style="margin-left:10px;">My Groups  </b></h1>
+            <lightning:layout multipleRows="true">
+                <aura:iteration items="{!v.chatterGroups}" var="eachGroup">
+                     <lightning:layoutItem padding="around-small" flexibility="auto">
+                        
+                        <!-- <div class="custom-box"> -->
+                            
+                            <a data-tgrpid="{!eachGroup.Id}" onclick="{!c.navigateToTrendingGrpDtl}">
+                                <lightning:icon iconName="standard:groups" variant="groups" size="small"/> 
+                                &nbsp;{!eachGroup.Name} </a>
+                                
+                        <!-- </div> -->
+                        
+                     </lightning:layoutItem> 
+                </aura:iteration>
+
+            </lightning:layout>
+
+
+        </div>
+
+    </div>
+    <br />
+    
+</aura:component>

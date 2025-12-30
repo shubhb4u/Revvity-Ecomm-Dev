@@ -1,0 +1,102 @@
+<template>
+  <div class="ecomm slds-p-around_medium">
+    <!-- Page Header -->
+    <header class="slds-grid slds-wrap slds-m-bottom_small slds-grid_vertical-align-center">
+      <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+        <h1 class="slds-text-heading_large slds-m-bottom_small">Quotes</h1>
+      </div>
+
+      <!-- Segmented pill made of two buttons -->
+      <div class="seg-switch slds-m-bottom_small" role="group" aria-label="Quote status">
+        <button type="button" class="seg-btn is-active" data-segment="active" aria-pressed="true">
+          Active Quotes
+        </button>
+
+        <button type="button" class="seg-btn is-inactive" data-segment="expired" aria-pressed="false">
+          Expired Quotes
+        </button>
+      </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="slds-grid slds-wrap slds-m-vertical_medium slds-grid_vertical-align-center">
+      <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+        <div class="slds-text-body_regular slds-text-color_default slds-m-right_small">
+          <strong>5 out of 20 Quotes</strong>
+        </div>
+      </div>
+
+      <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-text-align_right">
+        <div class="slds-grid slds-grid_align-end slds-grid_vertical-align-center slds-gutters_small">
+
+          <!-- Find a quote (accent link with icon) -->
+          <a href="javascript:void(0)" class="ecomm-link ecomm-link--accent slds-m-right_large">
+            <span class="slds-icon_container slds-icon-utility-search ecomm-inline-icon slds-m-right_x-small"
+              title="Search" aria-hidden="true"></span>
+            Find a quote
+          </a>
+          <!-- Simple Sort (minimal markup, no SLDS form classes) -->
+          <div class="sort-box slds-m-right_medium" aria-label="Sort by">
+            <span class="sort-label">Sort by:</span>
+            <select id="sortSelect" name="sorted" aria-label="Sort by">
+              <option value="newest" selected>Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="numberOfItems">Number of Items</option>
+              <option value="quoteTotal">Quote Total</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote List -->
+    <!-- <section aria-label="Quotes"> -->
+
+    <template for:each={calculatedQuotes} for:item="quote">
+      <div key={quote.quoteNumber} class="slds-card ecomm-card slds-m-bottom_small">
+        <div class="slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <h2 class="slds-card__header-title">
+              <span class="slds-truncate" title={quote.quoteNumber}>
+                <strong>Quote number: </strong> <span class="ecomm-number">{quote.quoteNumber}</span>
+              </span>
+            </h2>
+          </header>
+          <button type="button" class="btn-primary">
+            Add quote to Cart
+          </button>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner">
+          <div class="slds-grid slds-wrap slds-gutters">
+            <div class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-4">
+              <div class="ecomm-label">Valid until</div>
+              <div class="ecomm-value">{quote.expiresOn}</div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-4">
+              <div class="ecomm-label">Total</div>
+              <div class="ecomm-value">{quote.totalAmount}</div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-4">
+              <div class="ecomm-label">Items</div>
+              <div class="ecomm-value">{quote.items}</div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-4">
+              <div class="ecomm-label">Status</div>
+              <div class={quote.statusClass}>{quote.status}</div>
+            </div>
+            <div class="slds-col slds-grow-none slds-col_bump-left ecomm-details-link">
+              <a href="javascript:void(0)" class="ecomm-link">View quote details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <!-- </section> -->
+
+    <!-- PAGINATION -->
+    <!-- <c-ecom_quote-paginator lwc:if={showPaginator} page-size={pageSize} total-records={totalRecords}
+      is-client-side-pagination="true" onpaginationchange={paginationChangeHandler}></c-ecom_quote-paginator> -->
+
+  </div>
+</template>

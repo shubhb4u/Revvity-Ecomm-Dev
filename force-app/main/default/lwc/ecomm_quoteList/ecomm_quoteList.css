@@ -1,0 +1,326 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap'); */
+
+
+:host {
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               Roboto, Helvetica, Arial, sans-serif;
+
+  /* Palette */
+  --ecomm-text: #1f2937;             
+  --ecomm-subtle: #6b7280;           
+  --ecomm-border: #e5e7eb;           
+  --ecomm-border-strong: #d1d5db;    
+  --ecomm-bg: #ffffff;
+
+  --ecomm-danger: #dc2626;           
+  --ecomm-success: #10b981;          
+
+  /* Brand (Figma Orchid) */
+  --revvity-orchid: var(--Revvity-Orchid, #7F03B0);
+  --revvity-orchid-600: #6a0294;    
+  --revvity-orchid-700: #59027b;    
+
+  /* Keep legacy accent alias for existing selectors */
+  --ecomm-accent: var(--revvity-orchid);
+  --ecomm-accent-700: var(--revvity-orchid-600);
+
+  /* Radii & shadow */
+  --ecomm-radius-card: 12px;
+  --ecomm-radius-pill: 9999px;
+  --ecomm-shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.06);
+
+}
+
+
+.ecomm-value { font-size: 14px; font-weight: 600; color: var(--ecomm-text, #1f2937); }
+.ecomm-status--active  { color: var(--ecomm-success, #10b981); } 
+.ecomm-status--expired { color: var(--ecomm-danger,  #dc2626); }
+.ecomm-status--neutral { color: var(--ecomm-subtle,  #6b7280); } 
+
+
+/* Base container */
+.ecomm {
+  color: var(--ecomm-text);
+  font-family: inherit; 
+}
+
+/* ================================================
+   Segmented pill (two buttons)
+   ================================================ */
+
+/* Segmented pill container */
+.seg-switch {
+  display: inline-flex;
+  border: 1px solid var(--ecomm-border-strong);
+  border-radius: var(--ecomm-radius-pill);
+  overflow: hidden;
+  /* Make the pill itself a light gray strip so inactive looks gray */
+  background: #e6e6e9; /* pill track */
+}
+
+/* Segments (buttons) */
+.seg-btn {
+  flex: 1 1 50%;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--ecomm-text);
+  background: transparent;   /* default transparent so it shows pill track */
+  border: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Divider only between segments */
+.seg-btn + .seg-btn {
+  border-left: 1px solid var(--ecomm-border-strong);
+}
+
+/* ACTIVE: must match the container (white) */
+.seg-btn.is-active {
+  background: var(--ecomm-bg); /* typically #ffffff */
+  color: var(--ecomm-text);
+  font-weight: 600;
+}
+
+/* INACTIVE: show the gray track color and subtle text */
+.seg-btn.is-inactive {
+  background: transparent;      /* shows the pill track (#e6e6e9) */
+  color: var(--ecomm-subtle);
+}
+
+/* Hover/Focus */
+.seg-btn:hover { filter: brightness(0.98); }
+.seg-btn:focus-visible { outline: 2px solid var(--revvity-orchid); outline-offset: -2px; }
+
+/* Ensure the pill sits under the title on a new row if inside the header grid */
+.slds-grid.slds-wrap > .seg-switch {  /* NOTE: use literal '>' not '&gt;' */
+  flex: 1 1 100%;
+  order: 2;
+  margin-top: 8px;
+}
+
+/* Stack segments on very small screens */
+@media (max-width: 420px) {
+  .seg-switch { display: grid; grid-template-columns: 1fr; }
+  .seg-btn + .seg-btn { border-left: none; border-top: 1px solid var(--ecomm-border-strong); }
+}
+
+
+/* ================================================
+   Toolbar layout (right column)
+   - Stack "Find a quote" above sort box (optional)
+   ================================================ */
+.slds-col.slds-text-align_right > .slds-grid {
+  display: flex;
+  flex-direction: column;    /* stack */
+  align-items: flex-end;     /* right align */
+  gap: 10px;
+}
+
+/* Accent link (Find a quote / general) */
+.ecomm-link {
+  color: var(--revvity-orchid);
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ecomm-link:hover { color: var(--revvity-orchid-600); text-decoration: underline; }
+
+/* Tiny magnifier glyph (CSS only) */
+.ecomm-inline-icon {
+  display: inline-block;
+  width: 18px; height: 18px;
+  color: var(--revvity-orchid);
+  vertical-align: middle;
+  position: relative;
+}
+.ecomm-inline-icon::before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  left: 0; top: 0;
+}
+.ecomm-inline-icon::after {
+  content: "";
+  position: absolute;
+  width: 8px; height: 2px;
+  background: currentColor;
+  transform: rotate(45deg);
+  right: -2px; bottom: 2px;
+}
+
+/* ================================================
+   Simple Sort box (minimal, native select)
+   ================================================ */
+.sort-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--ecomm-border-strong);
+  border-radius: 8px;
+  background: var(--ecomm-bg);
+  padding: 6px 10px;
+  white-space: nowrap; /* keep on one line */
+}
+
+.sort-label {
+  font-size: 14px;
+  color: var(--ecomm-text);
+}
+
+.sort-box select {
+  font-size: 14px;
+  color: var(--ecomm-text);
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .sort-box { width: 100%; justify-content: space-between; }
+  .sort-box select { width: 55%; }
+}
+
+/* ================================================
+   Cards — layout & content styles
+   ================================================ */
+.ecomm-card {
+  border-radius: var(--ecomm-radius-card);
+  border: 1px solid var(--ecomm-border);
+  box-shadow: var(--ecomm-shadow-soft);
+  background: var(--ecomm-bg);
+}
+
+/* Header: title left, actions right */
+.slds-card__header {
+  display: flex;
+  align-items: center;
+}
+.slds-card__header .slds-card__header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.ecomm-number { font-weight: 700; }
+
+/* Body grid — keep neat gaps */
+.slds-card__body_inner .slds-grid {
+  column-gap: 12px;  /* tighter spacing per Figma */
+  row-gap: 8px;
+}
+
+/* Desktop behavior: 4 equal columns + right-aligned "View details" cell */
+@media (min-width: 768px) {
+  .slds-card__body_inner .slds-grid {
+    flex-wrap: nowrap;       /* keep on one line */
+    align-items: center;
+  }
+
+  /* Four fields (exclude the link cell) */
+  .slds-card__body_inner .slds-grid .slds-col:not(.ecomm-details-link) {
+    flex: 1 1 25%;
+    max-width: 25%;
+    min-width: 140px;
+  }
+
+  /* The "View details" cell: non-growing, far right */
+  .ecomm-details-link {
+    margin-right: 12px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    color: var(--revvity-orchid);   
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .ecomm-details-link:hover {
+    color: var(--revvity-orchid-600);
+    text-decoration: underline;
+  }
+}
+
+/* Labels & values */
+.ecomm-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ecomm-subtle);
+  margin-bottom: 4px;
+}
+.ecomm-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ecomm-text);
+}
+.ecomm-value--danger,
+.ecomm-status--expired { color: var(--ecomm-danger); }
+.ecomm-status--active { color: var(--ecomm-success); }
+
+/* ================================================
+   Buttons — brand primary (no SLDS)
+   ================================================ */
+.btn-primary {
+  background-color: var(--revvity-orchid);
+  color: #ffffff;
+  border: 2px solid var(--revvity-orchid);
+  border-radius: 24px;            /* pill */
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+
+  /* Micro-interactions */
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.12);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 100ms ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--revvity-orchid-600);
+  border-color: var(--revvity-orchid-600);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.16);
+}
+
+.btn-primary:focus-visible {
+  outline: 3px solid rgba(127, 3, 176, 0.35);
+  outline-offset: 2px;
+}
+
+/* Press feedback + Figma "Dissolve" animation */
+.btn-primary:active {
+  transform: translateY(1px);
+  animation: btn-dissolve 300ms ease-out;
+}
+
+.btn-primary[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Dissolve keyframes (fade) */
+@keyframes btn-dissolve {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+/* ================================================
+   Minor responsive tweak
+   ================================================ */
+@media (max-width: 860px) {
+  .seg-switch { max-width: 640px; }
+}
