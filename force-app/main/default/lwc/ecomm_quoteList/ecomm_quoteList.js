@@ -31,7 +31,7 @@ export default class Ecomm_quoteList extends LightningElement {
         });
     }
 
-    // PAGINATION changes - ---------------------------------------
+    // PAGINATION changes---------------------------------------
 
     @api pageSize = 20;
     @api pageNumber = 1;

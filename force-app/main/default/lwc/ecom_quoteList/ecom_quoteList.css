@@ -1,0 +1,557 @@
+:host {
+  /* Palette */
+  --ecomm-text: #000000;             
+  --ecomm-subtle: #6b7280;           
+  --ecomm-border: #e5e7eb;           
+  --ecomm-border-strong: #d1d5db;    
+  --ecomm-bg: #ffffff;
+
+  --ecomm-danger: #DC0101;           
+  --ecomm-success: #029333;          
+
+  /* Brand (Figma Orchid) */
+  --revvity-orchid: var(--Revvity-Orchid, #7F03B0);
+  --revvity-orchid-600: #6a0294;    
+  --revvity-orchid-700: #59027b;    
+
+  /* Keep legacy accent alias for existing selectors */
+  --ecomm-accent: var(--revvity-orchid);
+  --ecomm-accent-700: var(--revvity-orchid-600);
+
+  /* Radii & shadow */
+  --ecomm-radius-card: 12px;
+  --ecomm-radius-pill: 9999px;
+  --ecomm-shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.06);
+
+}
+
+
+.ecomm-value { font-size: 14px; font-weight: 600; color: var(--ecomm-text, #1f2937); }
+.ecomm-status--active  { color: var(--ecomm-success, #029333); } 
+.ecomm-status--expired { color: var(--ecomm-danger,  #DC0101); }
+.ecomm-status--neutral { color: var(--ecomm-subtle,  #6b7280); } 
+
+
+/* Base container */
+.ecomm {
+  color: var(--ecomm-text);
+  /* font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif; */
+}
+
+
+/* Page Heading */
+.slds-text-heading_large {
+  font-size: 48px;
+  color: var(--ecomm-text);
+  font-weight: 300;
+  line-height: 56px;
+  font-family: Hanken Grotesk !important;
+}
+
+
+/* ================================================
+   Segmented pill (two buttons)
+   ================================================ */
+
+/* Segmented pill container */
+.seg-switch {
+  display: inline-flex;
+  border: 1px solid var(--ecomm-border-strong);
+  border-radius: var(--ecomm-radius-pill);
+  overflow: hidden;
+  background: #e6e6e9; 
+}
+
+/* Segments (buttons) */
+.seg-btn {
+  flex: 1 1 50%;
+  padding: 12px 16px;
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--ecomm-text);
+  background: transparent; 
+  border: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Divider only between segments */
+.seg-btn + .seg-btn {
+  border-left: 1px solid var(--ecomm-border-strong);
+}
+
+/* ACTIVE: must match the container (white) */
+.seg-btn.is-active {
+  background: var(--ecomm-bg);
+  color: var(--ecomm-text);
+  font-weight: 600;
+}
+
+/* INACTIVE: show the gray track color and subtle text */
+.seg-btn.is-inactive {
+  background: transparent; 
+  color: var(--ecomm-subtle);
+}
+
+/* Hover/Focus */
+.seg-btn:hover { filter: brightness(0.98); }
+.seg-btn:focus-visible { outline: 2px solid var(--revvity-orchid); outline-offset: -2px; }
+
+/* Ensure the pill sits under the title on a new row if inside the header grid */
+.slds-grid.slds-wrap > .seg-switch {  
+  flex: 1 1 100%;
+  order: 2;
+  margin-top: 8px;
+}
+
+/* Stack segments on very small screens */
+@media (max-width: 420px) {
+  .seg-switch { display: grid; grid-template-columns: 1fr; }
+  .seg-btn + .seg-btn { border-left: none; border-top: 1px solid var(--ecomm-border-strong); }
+}
+
+
+/* ================================================
+   Toolbar layout (right column)
+   - Stack "Find a quote" above sort box (optional)
+   ================================================ */
+.slds-col.slds-text-align_right > .slds-grid {
+  display: flex;
+  flex-direction: column;   
+  align-items: flex-end;    
+  gap: 10px;
+}
+
+/* Accent link (Find a quote / general) */
+.ecomm-link {
+  color: var(--revvity-orchid) !important;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ecomm-link:hover {
+  color: var(--revvity-orchid-600) !important;
+  text-decoration: underline; 
+}
+
+/* Tiny magnifier glyph (CSS only) */
+.ecomm-inline-icon {
+  display: inline-block;
+  width: 18px; height: 18px;
+  color: var(--revvity-orchid);
+  vertical-align: middle;
+  position: relative;
+}
+.ecomm-inline-icon::before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  left: 0; top: 0;
+}
+.ecomm-inline-icon::after {
+  content: "";
+  position: absolute;
+  width: 8px; height: 2px;
+  background: currentColor;
+  transform: rotate(45deg);
+  right: -2px; bottom: 2px;
+}
+
+/* ================================================
+   Simple Sort box (minimal, native select)
+   ================================================ */
+.sort-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--ecomm-border-strong);
+  border-radius: 8px;
+  background: var(--ecomm-bg);
+  padding: 6px 10px;
+  white-space: nowrap; /* keep on one line */
+}
+
+.sort-label {
+  font-size: 14px;
+  color: var(--ecomm-text);
+}
+
+.sort-combobox-align{
+    width: 100%;
+}
+.sort-box select {
+  font-size: 14px;
+  color: var(--ecomm-text);
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .sort-box { width: 100%; justify-content: space-between; }
+  .sort-box select { width: 55%; }
+}
+
+/* ================================================
+   Cards — layout & content styles
+   ================================================ */
+.ecomm-card {
+  border-radius: var(--ecomm-radius-card);
+  border: 1px solid var(--ecomm-border);
+  box-shadow: var(--ecomm-shadow-soft);
+  background: var(--ecomm-bg);
+}
+
+/* Header: title left, actions right */
+.slds-card__header {
+  display: flex;
+  align-items: center;
+}
+.slds-card__header .slds-card__header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+/* Card header layout - responsive */
+.ecomm-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ecomm-quote-number-col {
+  flex: 1 1 auto;
+  min-width: 140px;
+  word-break: break-word;
+}
+
+.ecomm-button-col {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  flex-basis: 100%;
+  padding-top: 8px;
+  order: 3;
+}
+
+/* Mobile: keep button below on its own row */
+@media (max-width: 767px) {
+  .ecomm-card-header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  
+  .ecomm-quote-number-col {
+    flex: 1 1 auto;
+    min-width: 140px;
+  }
+  
+  .ecomm-button-col {
+    width: 100%;
+    padding-top: 8px;
+  }
+}
+
+/* On tablet and larger, button on same line as quote number */
+@media (min-width: 768px) {
+  .ecomm-card-header {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .ecomm-quote-number-col {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  
+  .ecomm-button-col {
+    width: auto;
+    padding-top: 0;
+    flex: 0 0 auto;
+    order: 0;
+  }
+}
+
+.ecomm-number { 
+  font-size: x-large;
+  font-weight: 500; 
+}
+
+/* Body grid — keep neat gaps */
+.slds-card__body_inner .slds-grid {
+  column-gap: 12px;  
+  row-gap: 8px;
+}
+
+/* Card body grid container */
+.ecomm-card-body-grid {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-start;
+}
+
+/* Field columns - default responsive */
+.ecomm-field-col {
+  flex: 1 1 100%;
+  min-width: 100px;
+}
+
+/* Details link column */
+.ecomm-details-link {
+  flex: 1 1 100%;
+  min-width: 100px;
+  order: 10;
+  padding-top: 8px;
+  padding-right: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--ecomm-border);
+}
+
+/* Mobile: 2 columns with proper wrapping */
+@media (max-width: 479px) {
+  .ecomm-card-body-grid {
+    gap: 12px 12px;
+  }
+  
+  .ecomm-field-col {
+    flex: 0 1 calc(50% - 6px);
+    min-width: 70px;
+  }
+  
+  .ecomm-details-link {
+    flex: 1 1 100%;
+    order: 10;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+}
+
+/* Tablet: flexible layout, 2-3 fields per row */
+@media (min-width: 480px) and (max-width: 767px) {
+  .ecomm-card-body-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .ecomm-field-col {
+    flex: 0 1 calc(50% - 8px);
+    min-width: 110px;
+  }
+  
+  .ecomm-details-link {
+    flex: 1 1 100%;
+    order: 10;
+    border-top: 1px solid var(--ecomm-border);
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+}
+
+/* Desktop behavior: fields in single row */
+@media (min-width: 768px) {
+  .ecomm-card-body-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  /* Four fields take equal space */
+  .ecomm-field-col {
+    flex: 1 1 20%;
+    min-width: 100px;
+  }
+
+  /* The "View details" cell: non-growing, far right */
+  .ecomm-details-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    order: 0;
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+    margin-left: 12px;
+  }
+}
+
+/* Labels & values (tuned to Figma) */
+.ecomm-label {
+  font-size: 14px;
+  font-weight: 700;            
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;          
+}
+
+.ecomm-value {
+  font-size: 18px;
+  font-weight: 400;           
+  color: var(--ecomm-text);
+}
+
+.ecomm-value--danger,
+.ecomm-status--expired { color: var(--ecomm-danger); }
+.ecomm-status--active { color: var(--ecomm-success); }
+
+
+
+/* ================================================
+   Buttons — brand primary (no SLDS)
+   ================================================ */
+.btn-primary {
+  background-color: var(--revvity-orchid);
+  color: #FFFFFF;
+  border: 2px solid var(--revvity-orchid);
+  border-radius: 24px;           
+  padding: 12px 20px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+
+  /* Micro-interactions */
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.12);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 100ms ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--revvity-orchid-600);
+  border-color: var(--revvity-orchid-600);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.16);
+}
+
+.btn-primary:focus-visible {
+  outline: 3px solid rgba(127, 3, 176, 0.35);
+  outline-offset: 2px;
+}
+
+/* Press feedback + Figma "Dissolve" animation */
+.btn-primary:active {
+  transform: translateY(1px);
+  animation: btn-dissolve 300ms ease-out;
+}
+
+.btn-primary[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Dissolve keyframes (fade) */
+@keyframes btn-dissolve {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+
+/* ==============================================
+   Buttons — brand secondary (outlined pill)
+   ============================================== */
+.btn-secondary {
+  background-color: transparent;                  
+  color: var(--revvity-orchid);                
+  border: 2px solid var(--revvity-orchid);        
+  border-radius: 24px;                          
+  padding: 12px 20px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+
+  /* Micro-interactions (same rhythm as primary) */
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);   /* subtler than primary */
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 100ms ease;
+}
+
+/* Hover: slightly darker outline & text; soft shadow */
+.btn-secondary:hover {
+  color: var(--revvity-orchid-600);
+  border-color: var(--revvity-orchid-600);
+  background-color: rgba(127, 3, 176, 0.06);      /* faint purple wash */
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.12);
+}
+
+/* Focus-visible: accessible ring consistent with primary */
+.btn-secondary:focus-visible {
+  outline: 3px solid rgba(127, 3, 176, 0.35);
+  outline-offset: 2px;
+}
+
+/* Active: press feedback + dissolve */
+.btn-secondary:active {
+  transform: translateY(1px);
+  animation: btn-dissolve 300ms ease-out;
+}
+
+/* Disabled: reduce contrast, remove shadow */
+.btn-secondary[disabled] {
+  color: color-mix(in srgb, var(--revvity-orchid), #000 60%);  /* muted purple */
+  border-color: var(--ecomm-border-strong);
+  background-color: transparent;
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Optional size variants */
+.btn-secondary.btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.btn-secondary.btn-lg {
+  padding: 12px 22px;
+  font-size: 15px;
+}
+
+/* Optional full-width */
+.btn-secondary.is-full {
+  width: 100%;
+}
+
+/* Reuse the same dissolve animation you already have */
+@keyframes btn-dissolve {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+
+/* ================================================
+   Minor responsive tweak
+   ================================================ */
+@media (max-width: 860px) {
+  .seg-switch { max-width: 640px; }
+}
+
+/* Details link additional styles for hover/focus */
+.ecomm-details-link {
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.ecomm-details-link a.ecomm-link {
+  color: var(--revvity-orchid) !important;
+  font-weight: 500;
+}

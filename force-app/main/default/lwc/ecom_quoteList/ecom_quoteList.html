@@ -1,0 +1,138 @@
+<template>
+  <div class="ecomm slds-p-around_medium">
+    <!-- Page Header -->
+    <header class="slds-grid slds-wrap slds-m-bottom_small slds-grid_vertical-align-center">
+      <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+        <h1 class="slds-text-heading_large slds-m-bottom_small">Quotes</h1>
+      </div>
+
+      <!-- Segmented pill made of two buttons -->
+      <div class="seg-switch slds-m-bottom_small" role="group" aria-label="Quote status">
+        <button type="button" class={activeButtonClass} data-segment="active" aria-pressed="true"
+          onclick={handleActiveQuotes}>
+          Active Quotes
+        </button>
+
+        <button type="button" class={expiredButtonClass} data-segment="expired" aria-pressed="false"
+          onclick={handleExpiredQuotes}>
+          Expired Quotes
+        </button>
+      </div>
+    </header>
+
+    <!-- Toolbar container -->
+    <div class="slds-grid slds-wrap slds-m-vertical_medium">
+
+      <!-- ===== Row 1: "Find a quote" (right aligned, its own row) ===== -->
+      <div class="slds-col slds-size_1-of-1 slds-text-align_right slds-m-bottom_small">
+        <a href="javascript:void(0)" class="ecomm-link">
+          <span class="slds-icon_container slds-icon-utility-search ecomm-inline-icon slds-m-right_x-small"
+            title="Search" aria-hidden="true"></span>
+          Find a quote
+        </a>
+      </div>
+
+      <!-- ===== Row 2: Count (left) + Sort combobox (right) ===== -->
+      <div class="slds-col slds-size_1-of-1">
+        <div class="slds-grid slds-wrap slds-grid_vertical-align-center">
+
+          <!-- Left column: Count -->
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+            <template if:true={isQuoteHistoryPage}>
+              <p class="slds-m-bottom_small slds-m-top_x-small ecomm-number">
+                <template if:true={totalQuotes}>
+                    <span if:true={fromRecords}>{fromRecords}-</span>{toRecords}
+                  <span> out of {totalQuotes} Quotes</span>
+                </template>
+              </p>
+            </template>
+          </div>
+
+          <!-- Right column: Sort combobox (right aligned) -->
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+            <template if:true={isQuoteHistoryPage}>
+              <div class="slds-grid slds-wrap slds-grid_align-end">
+                <div class="slds-col slds-size_auto">
+                  <lightning-combobox name="Sort" label="Sort" value={sortValue} placeholder="Sort by:"
+                    options={sortOption} variant="label-hidden" onchange={handleSortChange}>
+                  </lightning-combobox>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote List -->
+    <template for:each={quotesToDisplay} for:item="quote">
+      <div key={quote.quoteNumber} class="slds-card ecomm-card slds-m-bottom_small">
+
+        <div class="slds-card__header slds-grid slds-wrap slds-m-bottom_x-large slds-grid_vertical-align-center ecomm-card-header">
+          <!-- Left: Quote number -->
+          <div class="ecomm-quote-number-col">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <span class="ecomm-number">Quote number: {quote.quoteNumber}</span>
+            </header>
+          </div>
+
+          <!-- Right: action button, right aligned -->
+          <div class="ecomm-button-col">
+            <template lwc:if={isActiveSelected}>
+              <button type="button" class="btn-primary">Add quote to Cart</button>
+            </template>
+            <template lwc:if={isExpiredSelected}>
+              <button type="button" class="btn-secondary">Request again</button>
+            </template>
+          </div>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner">
+          <div class="ecomm-card-body-grid">
+
+            <!-- Valid until -->
+            <div class="ecomm-field-col">
+              <div class="ecomm-label">Valid until</div>
+              <div class={quote.expiresOnClass}>{quote.expiresOn}</div>
+            </div>
+
+            <!-- Total -->
+            <div class="ecomm-field-col">
+              <div class="ecomm-label">Total</div>
+              <div class="ecomm-value">{quote.totalAmount}</div>
+            </div>
+
+            <!-- Items -->
+            <div class="ecomm-field-col">
+              <div class="ecomm-label">Items</div>
+              <div class="ecomm-value">{quote.items}</div>
+            </div>
+
+            <!-- Status -->
+            <div class="ecomm-field-col">
+              <div class="ecomm-label">Status</div>
+              <div class={quote.statusClass}>{quote.status}</div>
+            </div>
+
+            <!-- View details link -->
+            <div class="ecomm-details-link">
+              <a href="javascript:void(0)" class="ecomm-link">View quote details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Paginator -->
+    <div class=" slds-m-top_large">
+      <template if:true={isLoadMoreEnabled}>
+        <div class="slds-grid slds-wrap">
+          <div class="slds-col slds-size_1-of-1">
+            <c-ecom_paginator ongotopage={pageChanged} page-size={defaultListSize}
+              current-page-number={currentPageNumber} total-records={totalQuotes}></c-ecom_paginator>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</template>
