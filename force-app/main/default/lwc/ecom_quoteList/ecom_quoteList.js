@@ -1,16 +1,17 @@
-import { LightningElement, track, api } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
+import getQuoteData from '@salesforce/apex/ECOM_quoteListController.getQuotes';
 
 export default class Ecom_quoteList extends LightningElement {
 
-    @track Quotes = [
-        { expiresOn: '2026-06-31', quoteNumber: 'Q-1001', totalAmount: '$1,200.00', items: 5, status: 'Active', createdDate: '2026-06-31' },
+    @track quotes = [
+        { expiresOn: '', quoteNumber: 'Q-1001', totalAmount: '$1,200.00', items: 5, status: 'Active', createdDate: '2026-06-31' },
         { expiresOn: '2026-01-15', quoteNumber: 'Q-1002', totalAmount: '$850.00', items: 3, status: 'Active', createdDate: '2026-01-15' },
         { expiresOn: '2026-02-28', quoteNumber: 'Q-1003', totalAmount: '$2,450.00', items: 8, status: 'Active', createdDate: '2026-02-28' },
         { expiresOn: '2026-03-31', quoteNumber: 'Q-1004', totalAmount: '$800.00', items: 6, status: 'Active', createdDate: '2026-03-31' },
         { expiresOn: '2026-04-30', quoteNumber: 'Q-1005', totalAmount: '$500.00', items: 4, status: 'Active', createdDate: '2026-04-30' },
         { expiresOn: '2026-05-31', quoteNumber: 'Q-1006', totalAmount: '$200.00', items: 5, status: 'Active', createdDate: '2026-05-31' },
         { expiresOn: '2024-06-30', quoteNumber: 'Q-1007', totalAmount: '$200.00', items: 5, status: 'Expired', createdDate: '2024-06-30' },
-        { expiresOn: '2024-07-31', quoteNumber: 'Q-1008', totalAmount: '$1.00', items: 5, status: 'Expired', createdDate: '2024-07-31' },
+        { expiresOn: '2024-07-31', quoteNumber: 'Q-1008', totalAmount: '', items: 5, status: 'Expired', createdDate: '2024-07-31' },
         { expiresOn: '2024-08-31', quoteNumber: 'Q-1009', totalAmount: '23.00', items: 5, status: 'Expired', createdDate: '2024-08-31' },
         { expiresOn: '2024-09-30', quoteNumber: 'Q-1010', totalAmount: '123.00', items: 34, status: 'Expired', createdDate: '2024-09-30' },
         { expiresOn: '2024-10-31', quoteNumber: 'Q-1011', totalAmount: '111.00', items: 52, status: 'Expired', createdDate: '2024-10-31' },
@@ -69,9 +70,19 @@ export default class Ecom_quoteList extends LightningElement {
     isActiveSelected = false;
     isExpiredSelected = false;
 
+    // @wire(getQuoteData)
+    // wiredQuotes(result){
+    //     this.quotes = result;
+    //     if(result.data){
+    //         this.Quotes = result.data;
+    //     } else if(result.error){
+    //         this.error = result.error;
+    //     }
+    // }
+
     connectedCallback() {
 
-        this.allQuotes = (this.Quotes || []).map(q => {
+        this.allQuotes = (this.quotes || []).map(q => {
             const s = (q.status || '').toLowerCase();
             const expiresOn = this.formatDateForUI(q.expiresOn);
             return {
@@ -79,7 +90,12 @@ export default class Ecom_quoteList extends LightningElement {
                 _status: s,
                 statusClass: this.getStatusClass(s),
                 expiresOn: expiresOn,
-                expiresOnClass: this.getExpiresOnClass(q.status)
+                expiresOnClass: this.getExpiresOnClass(q.status),
+                hasExpiresOn: q.expiresOn !== null && q.expiresOn !== undefined && q.expiresOn !== '',
+                hasQuoteNumber: q.quoteNumber !== null && q.quoteNumber !== undefined && q.quoteNumber !== '',
+                hasTotalAmount: q.totalAmount !== null && q.totalAmount !== undefined && q.totalAmount !== '',
+                hasItems: q.items !== null && q.items !== undefined && q.items !== '',
+                hasStatus: q.status !== null && q.status !== undefined && q.status !== ''
             };
         });
 
@@ -246,8 +262,8 @@ export default class Ecom_quoteList extends LightningElement {
         // Trim only if month name is longer than 4 characters
         const monthDisplay = monthFull.length > 4 ? monthFull.slice(0, 3) : monthFull;
 
-        const day = d.getDate();        
-        const year = d.getFullYear(); 
+        const day = d.getDate();
+        const year = d.getFullYear();
 
         return `${monthDisplay} ${day}, ${year}`;
     }

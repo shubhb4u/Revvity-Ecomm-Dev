@@ -411,10 +411,10 @@
    ================================================ */
 .btn-primary {
   background-color: var(--revvity-orchid);
-  color: #FFFFFF;
+  color: #ffffff;
   border: 2px solid var(--revvity-orchid);
-  border-radius: 24px;           
-  padding: 12px 20px;
+  border-radius: 24px;            /* pill */
+  padding: 10px 18px;
   font-size: 18px;
   font-weight: 600;
   line-height: 1.2;
@@ -468,7 +468,7 @@
   color: var(--revvity-orchid);                
   border: 2px solid var(--revvity-orchid);        
   border-radius: 24px;                          
-  padding: 12px 20px;
+  padding: 10px 18px;
   font-size: 18px;
   font-weight: 600;
   line-height: 1.2;
