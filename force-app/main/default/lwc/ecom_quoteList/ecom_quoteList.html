@@ -65,78 +65,79 @@
     </div>
 
     <!-- Quote List -->
-    <template for:each={quotesToDisplay} for:item="quote">
-      <div key={quote.quoteNumber} class="slds-card ecomm-card slds-m-bottom_small">
+    <template if:true={quotesToDisplay}>
+      <template for:each={quotesToDisplay} for:item="quote">
+        <template if:true={quote}>
+          <div key={quote.Id} class="slds-card ecomm-card slds-m-bottom_small">
 
-        <div
-          class="slds-card__header slds-grid slds-wrap slds-m-bottom_x-large slds-grid_vertical-align-center ecomm-card-header">
-          <!-- Left: Quote number -->
-          <div class="ecomm-quote-number-col">
-            <header class="slds-media slds-media_center slds-has-flexi-truncate">
-              <span class="ecomm-number">Quote number: {quote.quoteNumber}</span>
-            </header>
-          </div>
+            <div
+              class="slds-card__header slds-grid slds-wrap slds-m-bottom_x-large slds-grid_vertical-align-center ecomm-card-header">
+              <!-- Left: Quote number -->
+              <div class="ecomm-quote-number-col">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                  <span class="ecomm-number">Quote number: {quote.Name}</span>
+                </header>
+              </div>
 
-          <!-- Right: action button, right aligned -->
-          <div class="ecomm-button-col">
-            <template lwc:if={isActiveSelected}>
-              <button type="button" class="btn-primary">Add quote to Cart</button>
-            </template>
-            <template lwc:if={isExpiredSelected}>
-              <button type="button" class="btn-secondary">Request again</button>
-            </template>
-          </div>
-        </div>
-
-        <div class="slds-card__body slds-card__body_inner">
-          <div class="ecomm-card-body-grid">
-
-            <!-- Valid until -->
-            <div class="ecomm-field-col">
-              <template if:true={quote.hasExpiresOn}>
-                <div class="ecomm-label">Valid until</div>
-                <div class={quote.expiresOnClass}>{quote.expiresOn}</div>
-              </template>
-              <template if:false={quote.hasExpiresOn}>
-              </template>
+              <!-- Right: action button, right aligned -->
+              <div class="ecomm-button-col">
+                <template lwc:if={isActiveSelected}>
+                  <button type="button" class="btn-primary">Add quote to Cart</button>
+                </template>
+                <template lwc:if={isExpiredSelected}>
+                  <button type="button" class="btn-secondary">Request again</button>
+                </template>
+              </div>
             </div>
 
-            <!-- Total -->
-            <div class="ecomm-field-col">
-              <template if:true={quote.hasTotalAmount}>
-                <div class="ecomm-label">Total</div>
-                <div class="ecomm-value">{quote.totalAmount}</div>
-              </template>
-              <template if:false={quote.hasTotalAmount}>
-              </template>
-            </div>
+            <div class="slds-card__body slds-card__body_inner">
+              <div class="ecomm-card-body-grid">
 
-            <!-- Items -->
-            <div class="ecomm-field-col">
-              <template if:true={quote.hasItems}>
-                <div class="ecomm-label">Items</div>
-                <div class="ecomm-value">{quote.items}</div>
-              </template>
-              <template if:false={quote.hasItems}>
-              </template>
-            </div>
+                <!-- Valid until -->
+                <div class="ecomm-field-col">
+                  <template if:true={quote.hasExpiresOn}>
+                    <div class="ecomm-label">Valid until</div>
+                    <div class={quote.expiresOnClass}>{quote.expiresOn}</div>
+                  </template>
+                </div>
 
-            <!-- Status -->
-            <div class="ecomm-field-col">
-              <template if:true={quote.hasStatus}>
-                <div class="ecomm-label">Status</div>
-                <div class={quote.statusClass}>{quote.status}</div>
-              </template>
-              <template if:false={quote.hasStatus}>
-              </template>
-            </div>
+                <!-- Total -->
+                <div class="ecomm-field-col">
+                  <template if:true={quote.hasTotalAmount}>
+                    <div class="ecomm-label">Total</div>
+                    <div class="ecomm-value">{quote.SBQQ__NetAmount__c}</div>
+                  </template>
+                </div>
 
-            <!-- View details link -->
-            <div class="ecomm-details-link">
-              <a href="javascript:void(0)" class="ecomm-link">View quote details</a>
+                <!-- Items -->
+                <div class="ecomm-field-col">
+                  <template if:true={quote.hasItems}>
+                    <div class="ecomm-label">Items</div>
+                    <div class="ecomm-value">{quote.SBQQ__LineItemCount__c}</div>
+                  </template>
+                </div>
+
+                <!-- Status -->
+                <div class="ecomm-field-col">
+                  <template if:true={quote.hasStatus}>
+                    <div class="ecomm-label">Status</div>
+                    <div class={quote.statusClass}>{quote.SBQQ__Status__c}</div>
+                  </template>
+                </div>
+
+                <!-- View details link -->
+                <div class="ecomm-details-link">
+                  <a href="javascript:void(0)" class="ecomm-link">View quote details</a>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
+      </template>
+    </template>
+    <template if:false={quotesToDisplay}>
+      <div class="slds-m-top_large slds-text-align_center">
+        <p class="slds-text-body_regular slds-m-bottom_small">0 Quotes in My Quotes</p>
       </div>
     </template>
 

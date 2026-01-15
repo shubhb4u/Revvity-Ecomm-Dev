@@ -5,6 +5,6 @@
     <targets>
         <target>lightning__UrlAddressable</target>
         <target>lightningCommunity__Page</target>
-        <target>lightning__ExperienceAppPage</target>
+        <target>lightningCommunity__Default</target>
     </targets>
 </LightningComponentBundle>

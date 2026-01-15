@@ -3,8 +3,8 @@
     <div class="page">
 
         <!-- Top nav / back -->
-        <div class="page-header slds-p-vertical_medium slds-border_bottom">
-            <div class="slds-grid">
+        <div class="ecomm-link slds-p-vertical_medium slds-border_bottom">
+            <div class="slds-grid slds-grid_vertical-align-center">
                 <div class="slds-col">
                     <lightning-button-icon icon-name="utility:chevronleft" variant="bare" class="back-icon"
                         alternative-text="Back">
@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <div class="container">
+        <div class="container slds-border_bottom">
             <!-- Header row: title left, button right -->
             <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center header-row">
                 <div class="slds-col slds-p-right_small">
@@ -126,7 +126,7 @@
 
 
         <!-- Items header & actions -->
-        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-top_x-large items-header">
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-top_xx-large slds-m-bottom_xx-large items-header">
             <div class="slds-col">
                 <h2 class="section-title">Items</h2>
             </div>
@@ -164,7 +164,7 @@
 
                     <!-- NEW: meta cell (holds Part# and Product description) -->
                     <div class="cell name-meta">
-                        <div class="subtext">Part#: {line.ProductCode}</div>
+                        <div class="subtext">Part#: <span class="cellValue">{line.ProductCode}</span></div>
                         <div class="subtext">Product description: {line.ProductFamily}</div>
                     </div>
 
@@ -189,8 +189,8 @@
         </div>
 
 
-    <div class="slds-m-top_xx-large totals-section">
-        <h2 class="section-title">Total</h2>
+    <div class="slds-m-top_xx-large slds-m-bottom_x-large totals-section">
+        <h2 class="section-title slds-m-bottom_x-large">Total</h2>
 
         <div class="totals-wrap">
             <div class="totals-card slds-p-around_medium">
@@ -271,7 +271,7 @@
                     <!-- Row 2: index spacer + meta + prices + qty + total -->
                     <div class="cell index index-bottom"></div>
                     <div class="cell name-meta">
-                        <div class="subtext">Part#: {oline.ProductCode}</div>
+                        <div class="subtext">Part#: <span class="cellValue">{oline.ProductCode}</span></div>
                         <div class="subtext">Product description: {oline.ProductFamily}</div>
                     </div>
 
@@ -302,8 +302,8 @@
         </p>
 
         <!-- Optional Items Total (compact card) -->
-        <div class="optional-total-wrap slds-m-top_large">
-            <h2 class="section-title">Total</h2>
+        <div class="optional-total-wrap slds-m-top_xx-large">
+            <h2 class="section-title slds-m-bottom_large">Total</h2>
             <div class="totals-card optional-card">
                 <div
                     class="totals-row totals-row--grand slds-grid slds-grid_align-spread slds-grid_vertical-align-center">

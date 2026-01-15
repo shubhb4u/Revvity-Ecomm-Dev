@@ -18,7 +18,7 @@
     --ecomm-accent-700: var(--revvity-orchid-600);
 
     --ecomm-radius-card: 12px;
-    --ecomm-radius-pill: 9999px;
+    --ecomm-radius-pill: 40px;
     --ecomm-shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.06);
 
     --accent-color: var(--ecomm-accent);
@@ -28,12 +28,7 @@
     --border-color: var(--ecomm-border);
 }
 
-/* Utility classes from your tokens */
-.ecomm-value {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ecomm-text);
-}
+
 
 .ecomm-status--active {
     color: var(--ecomm-success);
@@ -49,16 +44,25 @@
 
 /* Base wrapper: apply brand font + color */
 .page {
-    color: var(--ecomm-text);
-    font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-        'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    background-color: var(--ecomm-bg);
     padding: 1rem;
 }
 
 .container {
-    max-width: 980px;
+    max-width: 100%;
 }
+
+
+.ecomm-link {
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 500;         
+  font-size: 18px;
+  line-height: 24px;      
+  letter-spacing: 0;       
+  color: var(--ecomm-accent, #7F03B0);
+  text-decoration: none;
+}
+
 
 .header-row {
     margin-top: 1rem;
@@ -66,18 +70,21 @@
 
 .quote-title {
     margin: 0;
-    font-size: 1.75rem;
-    font-weight: 600;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 40px;
     color: var(--ecomm-text);
-    font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-        'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-family:  'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Pill buttons (shared) */
 .btn {
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
     border-radius: var(--ecomm-radius-pill);
-    padding: .55rem 1rem;
+    padding: 12px 20px;
     cursor: pointer;
     font-family: inherit;
 }
@@ -139,9 +146,11 @@
 
 .stat-label {
     display: block;
-    color: var(--ecomm-subtle);
+    color: var(--ecomm-text);
     font-weight: 700;
-    font-size: .85rem;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 4%;
     margin-bottom: .25rem;
     font-family: inherit;
 }
@@ -149,6 +158,10 @@
 .stat-value {
     display: block;
     color: var(--ecomm-text);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: 0%;
 }
 
 .status-active {
@@ -160,11 +173,13 @@
    Shipping & billing section
    ========================================================================== */
 .section-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 2rem 0;
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 500;
     color: var(--ecomm-text);
-    font-family: inherit;
+    font-family:  'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    margin-top: 3rem 0;
 }
 
 .info-columns .slds-col {
@@ -177,13 +192,18 @@
 
 .info-title {
     font-weight: 700;
-    font-size: .875rem;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 0.04;
     color: var(--ecomm-text);
 }
 
 .info-text {
     color: var(--ecomm-text);
     margin-top: .25rem;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
 }
 
 @media (max-width: 480px) {
@@ -221,8 +241,20 @@
     gap: 16px;
     padding: 12px 0;
     border-bottom: 1px solid var(--ecomm-border);
-    font-weight: 700;
     color: var(--ecomm-text);
+}
+
+/* Header cells — ALL headers should be 18/24 */
+.items-table .row.header .cell {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    color: var(--ecomm-text);
+}
+
+/* Optional: keep '#' slightly muted but same size */
+.items-table .row.header .cell.index {
+    color: var(--ecomm-subtle);
 }
 
 /* Data row: two-line layout
@@ -245,21 +277,76 @@
 .index-top      { grid-area: index-top; }
 .name-top       { grid-area: name-top; }
 .index-bottom   { grid-area: index-bottom; }
-.name-meta      { grid-area: meta; }       /* Part# + description */
+.name-meta      { grid-area: meta; }      
 .list-price     { grid-area: list-price; }
 .net-price      { grid-area: net-price; }
 .qty-cell       { grid-area: qty; }
 .total-cell     { grid-area: total; }
 
-/* Cells alignment */
-.cell.index { text-align: left; color: var(--ecomm-subtle); }
-.cell.qty   { text-align: left; color: var(--ecomm-text); }
-.cell.price,
-.cell.total { text-align: right; color: var(--ecomm-text); }
+/* =========================
+   Typography (Figma mapping)
+   ========================= */
 
-/* Name block + meta typography */
-.line-name { font-weight: 600; color: var(--ecomm-text); }
-.subtext   { color: var(--ecomm-subtle); font-size: .85rem; margin-top: .15rem; }
+/* Name cell/title — 18/24 */
+.items-table .row.row-2line .cell.name,
+.items-table .row.row-2line .line-name {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    color: var(--ecomm-text);
+}
+
+/* Subtext under name — 14/20, subtle grey */
+.subtext { 
+    color: var(--ecomm-subtle);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px; 
+    margin-top: .15rem; 
+}
+
+
+.items-table .row.header .cell,
+.items-table .row.row-2line .cell,
+.opt-items-table .row.header .cell,
+.opt-items-table .row.row-2line .cell {
+  min-width: 0; /* prevents content from forcing overflow */
+}
+
+
+/* Numeric cells (prices, qty, total) — 14/20, weight 500
+   IMPORTANT: scope to body rows so header is not affected */
+.items-table .row.row-2line .cell.price,
+.items-table .row.row-2line .cell.qty,
+.items-table .row.row-2line .cell.total,
+.items-table .row.row-2line .cellValue {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--ecomm-text);
+}
+
+/* Ensure lightning base component inherits the parent metrics */
+.items-table .row.row-2line .cell.price > lightning-formatted-number,
+.items-table .row.row-2line .cell.total > lightning-formatted-number {
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
+
+/* Index cell — 14/20, slightly muted */
+.items-table .row.row-2line .cell.index {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--ecomm-subtle);
+}
+
+/* Alignment */
+.items-table .cell.qty   { text-align: left; }
+.items-table .cell.price,
+.items-table .cell.total { text-align: right; }
 
 /* Medium screens: slightly tighter columns */
 @media (max-width: 1024px) {
@@ -299,8 +386,10 @@
         display: inline-block;
         grid-area: meta;
         text-align: left;
-        color: var(--ecomm-subtle);
-        font-size: .85rem;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--ecomm-text); 
         margin-right: 12px;
     }
 
@@ -312,6 +401,7 @@
 
     .total-cell { font-weight: 600; }
 }
+
 
 /* ==========================================================================
    Totals — Figma exact styles
@@ -345,14 +435,16 @@
 
 .totals-label {
     color: var(--ecomm-text, #000000);
-    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
     font-family: inherit;
 }
 
 .totals-value {
     text-align: right;
     color: var(--ecomm-text, #000000);
-    font-weight: 500;
+    font-weight: 400;
     font-family: inherit;
 }
 
@@ -360,20 +452,22 @@
 .totals-label--saving,
 .totals-value--saving {
     color: var(--ecomm-success, #029333);
-    font-weight: 600;
+    font-weight: 400;
 }
 
 /* Divider between list rows and grand total */
 .totals-divider {
     border: 0;
     border-top: 1px solid #E3E3E3;
-    margin: 0;  /* row-gap handles vertical spacing */
+    margin: 0;  
 }
 
 /* Grand total emphasis */
 .totals-row--grand .totals-label--grand,
 .totals-row--grand .totals-value--grand {
-    font-weight: 700;
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 500;
 }
 
 /* Mobile: stack label & value for readability */
@@ -386,21 +480,25 @@
 }
 
 
+
+
 /* =======================================================================
    Optional Items section
    ======================================================================= */
 .optional-section .section-title {
-  /* already inherits your brand font & color */
+  /* inherits brand font & color */
 }
 
 .opt-subtitle {
   color: var(--ecomm-subtle);
   font-style: italic;
-  font-size: .95rem;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
   margin-top: .25rem;
 }
 
-/* Use the same two-row table layout as Items */
+/* Two-row table layout */
 .opt-items-table { margin-top: .5rem; }
 
 .opt-items-table .row.header {
@@ -409,8 +507,20 @@
   gap: 16px;
   padding: 12px 0;
   border-bottom: 1px solid var(--ecomm-border);
-  font-weight: 700;
   color: var(--ecomm-text);
+}
+
+/* Header cells — ALL headers should be 18/24 */
+.opt-items-table .row.header .cell {
+  font-weight: 600;           /* Figma Medium/Semibold look */
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--ecomm-text);
+}
+
+/* Optional: keep '#' slightly muted but same size */
+.opt-items-table .row.header .cell.index {
+  color: var(--ecomm-subtle);
 }
 
 .opt-items-table .row.row-2line {
@@ -425,7 +535,7 @@
   color: var(--ecomm-text);
 }
 
-/* Map areas (reusing same class names) */
+/* Map areas (same class names) */
 .opt-items-table .index-top      { grid-area: index-top; }
 .opt-items-table .name-top       { grid-area: name-top; }
 .opt-items-table .index-bottom   { grid-area: index-bottom; }
@@ -435,16 +545,80 @@
 .opt-items-table .qty-cell       { grid-area: qty; }
 .opt-items-table .total-cell     { grid-area: total; }
 
-/* Cell alignment (reuse your existing styles but scoped here) */
-.opt-items-table .cell.index { text-align: left; color: var(--ecomm-subtle); }
-.opt-items-table .cell.qty   { text-align: left; color: var(--ecomm-text); }
+/* =========================
+   Typography (Figma mapping)
+   ========================= */
+
+   
+.line-name {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+/* Body: Name/title — 18/24 */
+.opt-items-table .row.row-2line .cell.name,
+.opt-items-table .row.row-2line .line-name {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--ecomm-text);
+}
+
+/* Body: subtext — 14/20, subtle grey */
+.opt-items-table .row.row-2line .name-meta .subtext {
+  color: var(--ecomm-subtle);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: .15rem;
+}
+
+
+.opt-items-table .row.row-2line .name-meta .subtext .cellValue {
+  color: var(--ecomm-text);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+
+/* Body: numeric cells — 14/20, weight 500
+   IMPORTANT: scope to body rows so header is not affected */
+.opt-items-table .row.row-2line .cell.price,
+.opt-items-table .row.row-2line .cell.qty,
+.opt-items-table .row.row-2line .cell.total  {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ecomm-text);
+}
+
+/* Ensure lightning base component inherits these metrics */
+.opt-items-table .row.row-2line .cell.price > lightning-formatted-number,
+.opt-items-table .row.row-2line .cell.total > lightning-formatted-number {
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Index cell — 14/20, slightly muted */
+.opt-items-table .row.row-2line .cell.index {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ecomm-subtle);
+}
+
+/* Alignment */
+.opt-items-table .cell.qty   { text-align: left; }
 .opt-items-table .cell.price,
-.opt-items-table .cell.total { text-align: right; color: var(--ecomm-text); }
+.opt-items-table .cell.total { text-align: right; }
 
-.opt-items-table .line-name { font-weight: 600; color: var(--ecomm-text); }
-.opt-items-table .subtext   { color: var(--ecomm-subtle); font-size: .85rem; margin-top: .15rem; }
-
-/* Responsive mirrors the main Items table */
+/* =========================
+   Responsive
+   ========================= */
 @media (max-width: 1024px) {
   .opt-items-table .row.header,
   .opt-items-table .row.row-2line {
@@ -452,6 +626,7 @@
     gap: 8px 12px;
   }
 }
+
 @media (max-width: 768px) {
   .opt-items-table .row.header,
   .opt-items-table .row.row-2line {
@@ -459,8 +634,10 @@
     gap: 8px 12px;
   }
 }
+
 @media (max-width: 480px) {
   .opt-items-table .row.header { display: none; }
+
   .opt-items-table .row.row-2line {
     grid-template-columns: 40px 1fr;
     grid-template-areas:
@@ -470,30 +647,38 @@
       "index-bottom total";
     gap: 6px 10px;
   }
+
+  /* Prices appear inline within the meta area (same line as Part#) */
   .opt-items-table .list-price,
   .opt-items-table .net-price {
     display: inline-block;
     grid-area: meta;
     text-align: left;
-    color: var(--ecomm-subtle);
-    font-size: .85rem;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--ecomm-text);
     margin-right: 12px;
   }
+
   .opt-items-table .qty-cell,
   .opt-items-table .total-cell {
     text-align: left;
     color: var(--ecomm-text);
   }
+
   .opt-items-table .total-cell { font-weight: 600; }
 }
 
-/* Red italic note */
-.opt-warning {
-  color: var(--ecomm-danger);
-  font-style: italic;
-  font-size: .95rem;
-  margin-top: .5rem;
+.opt-warning{
+    color: var(--ecomm-danger);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    font-style: italic;
+    margin-top: 1rem;
 }
+
 
 /* =======================================================================
    Optional Items Total (compact card)
@@ -519,7 +704,9 @@
 /* Grand total emphasis (reuse your main totals styles) */
 .totals-row--grand .totals-label--grand,
 .totals-row--grand .totals-value--grand {
-  font-weight: 700;
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 500;
 }
 .totals-row { display: grid; grid-template-columns: 1fr auto; align-items: center; }
 .totals-value { text-align: right; color: var(--ecomm-text); }
