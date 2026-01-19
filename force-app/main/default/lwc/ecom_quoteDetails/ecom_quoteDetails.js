@@ -1,6 +1,7 @@
+import { LightningElement, track, api, wire } from 'lwc';
+import { CurrentPageReference } from 'lightning/navigation';
+import getQuoteById from '@salesforce/apex/ECOM_quoteListController.getQuoteById';
 
-// quoteDetailsPage.js (add/replace these parts)
-import { LightningElement, track, api } from 'lwc';
 
 export default class Ecom_QuoteDetails extends LightningElement {
   @api recordId = '0Q0STATICQUOTE00001';
@@ -132,17 +133,41 @@ export default class Ecom_QuoteDetails extends LightningElement {
 
   // If your Optional Items "Total" card should show ONLY optional items:
   get optionalGrandTotal() {
-    // If you want to include tax/freight/savings for optional items,
-    // adjust here; currently it mirrors optionalSubtotal.
     return this.optionalSubtotal;
   }
 
-  // If your UI "grand total with optional" should add both:
   get grandTotalWithOptional() {
     return this.grandTotal + this.optionalSubtotal;
   }
 
-  /* ========= Loading & error placeholders ========= */
   @track isLoading = false;
   @track error = null;
+
+
+  //Wire changes for backend -----------------------------------------
+  quoteId;
+  quoteDetails;
+  error;
+
+  @wire(CurrentPageReference)
+  pageRef;
+
+  connectedCallback() {
+    // Extract quoteId from URL parameters
+    if (this.pageRef && this.pageRef.state && this.pageRef.state.c__quoteId) {
+      this.quoteId = this.pageRef.state.c__quoteId;
+      this.loadQuoteDetails();
+    }
+  }
+
+  loadQuoteDetails() {
+    getQuoteById({ quoteId: this.quoteId })
+      .then(result => {
+        this.quoteDetails = result;
+        console.log('Quote Details:', this.quoteDetails);
+      })
+      .catch(error => {
+        this.error = error;
+      });
+  }
 }

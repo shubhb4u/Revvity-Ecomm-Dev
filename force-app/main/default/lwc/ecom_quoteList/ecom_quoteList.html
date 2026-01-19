@@ -105,7 +105,7 @@
                 <div class="ecomm-field-col">
                   <template if:true={quote.hasTotalAmount}>
                     <div class="ecomm-label">Total</div>
-                    <div class="ecomm-value">{quote.SBQQ__NetAmount__c}</div>
+                    <div class="ecomm-value">${quote.SBQQ__NetAmount__c}</div>
                   </template>
                 </div>
 
@@ -127,7 +127,10 @@
 
                 <!-- View details link -->
                 <div class="ecomm-details-link">
-                  <a href="javascript:void(0)" class="ecomm-link">View quote details</a>
+                  <a href="javascript:void(0)" class="ecomm-link" data-quote-id={quote.Id}
+                    onclick={handleViewQuoteDetails}>
+                    View quote details
+                  </a>
                 </div>
               </div>
             </div>

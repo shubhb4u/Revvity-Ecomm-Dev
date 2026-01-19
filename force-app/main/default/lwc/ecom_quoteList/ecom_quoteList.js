@@ -1,19 +1,18 @@
 import { LightningElement, track, wire } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import getQuoteData from '@salesforce/apex/ECOM_quoteListController.getQuotes';
 
-export default class Ecom_quoteList extends LightningElement {
+export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
 
-    
     quotes = [];
     allQuotes = [];
     activeQuotes = [];
     expiredQuotes = [];
     myQuotes = [];
-
     defaultListSize = 5;
     nextLoadCount = 0;
     currentPageNumber = 1;
-    fromRecords = 0;
+    fromRecords = 1;
     toRecords = this.defaultListSize;
     isLoadMore = false;
     quotesToDisplay = [];
@@ -72,10 +71,6 @@ export default class Ecom_quoteList extends LightningElement {
         this.applySegment('active');
     }
 
-    connectedCallback() {
-
-    }
-
     get isLoadMoreEnabled() {
         return this.isLoadMore && this.isQuoteHistoryPage;
     }
@@ -107,9 +102,11 @@ export default class Ecom_quoteList extends LightningElement {
         }
 
         this.sortValue = 'newest';
-        this.sortData('createdDate', 'desc');
+        this.sortData('CreatedDate', 'desc');
 
         this.totalQuotes = this.myQuotes.length;
+        this.fromRecords = 1; // Reset to 1 when changing segments
+        this.toRecords = this.defaultListSize > this.totalQuotes ? this.totalQuotes : this.defaultListSize;
         //update default size
         this.nextLoadCount = this.defaultListSize;
         if (this.defaultListSize > this.totalQuotes) {
@@ -129,7 +126,9 @@ export default class Ecom_quoteList extends LightningElement {
         this.currentPageNumber = parseInt(pageNumber);
         const start = (this.currentPageNumber - 1) * this.defaultListSize;
         const end = this.defaultListSize * this.currentPageNumber;
-        this.fromRecords = start == 0 ? start : start + 1;
+        // this.fromRecords = start == 0 ? start : start + 1;
+    this.fromRecords = start === 0 ? 1 : start + 1;
+
         this.toRecords = end > this.totalQuotes ? this.totalQuotes : end;
         this.quotesToDisplay = this.myQuotes.slice(start, end);
     }
@@ -156,10 +155,10 @@ export default class Ecom_quoteList extends LightningElement {
         this.sortValue = event.detail.value;
 
         if (sortBy == 'oldest') {
-            this.sortData('createdDate', 'asc');
+            this.sortData('CreatedDate', 'asc');
         }
         if (sortBy == 'newest') {
-            this.sortData('createdDate', 'desc');
+            this.sortData('CreatedDate', 'desc');
         }
         if (sortBy == 'items') {
             this.sortData('SBQQ__LineItemCount__c', 'desc');
@@ -168,7 +167,7 @@ export default class Ecom_quoteList extends LightningElement {
             this.sortData('SBQQ__NetAmount__c', 'desc');
         }
         this.currentPageNumber = 1;
-        this.fromRecords = 0;
+        this.fromRecords = 1;
         this.toRecords = this.defaultListSize;
         this.quotesToDisplay = [];
         //update default size
@@ -234,4 +233,15 @@ export default class Ecom_quoteList extends LightningElement {
         return `${monthDisplay} ${day}, ${year}`;
     }
 
+
+    handleViewQuoteDetails(event) {
+
+        let quoteId = event.currentTarget.dataset.quoteId;
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: `/quote-detail?id=` + quoteId
+            }
+        });
+    }
 }
