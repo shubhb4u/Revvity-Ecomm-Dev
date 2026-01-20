@@ -11,24 +11,45 @@ global with sharing class CPQQuoteWithLinesApi {
         RestRequest req = RestContext.request;
 
         // Inputs
-        String accountId = req.params.get('accountId');
+        String contactId = req.params.get('contactId');
         Integer limitSize   = parseIntOrDefault(req.params.get('limit'), 100, 1, 500);
         Integer linesLimit  = parseIntOrDefault(req.params.get('linesLimit'), 500, 1, 2000);
 
-        if (String.isBlank(accountId)) {
-            throw new AuraHandledException('Missing accountId');
+        if (String.isBlank(contactId)) {
+            throw new AuraHandledException('Missing contactId');
         }
 
         // --- Query quotes (curated fields) ---
+        Date today = Date.today();
+        Date twelveMonthsAgo = today.addMonths(-12);
+
         List<SBQQ__Quote__c> quotes = [
-            SELECT Id,
-                   Name,
-                   SBQQ__Status__c,
-                   SBQQ__Primary__c,
-                   SBQQ__Account__c
+            SELECT Id, Name, SBQQ__ExpirationDate__c,SBQQ__Primary__c, SBQQ__NetAmount__c, SBQQ__LineItemCount__c, SBQQ__Status__c, CreatedDate, Total_Freight__c, TotalTax__c, fxGrand_Total__c
             FROM SBQQ__Quote__c
-            WHERE SBQQ__Account__c = :accountId
-            ORDER BY CreatedDate DESC
+            WHERE SBQQ__PrimaryContact__c = :contactId
+            // AND 
+            // (
+            //     (
+            //         SBQQ__Primary__c = true
+            //         AND SBQQ__ExpirationDate__c >= :today
+            //         AND SAPQuoteID__c != null
+            //     )
+            // )
+            // OR
+            // (
+            //     SBQQ__Primary__c = false
+            //     AND SBQQ__ExpirationDate__c >= :today
+            //     AND Publish_To_Site__c = true
+            //     AND SAPQuoteID__c != null
+            // )
+            // OR
+            // (
+            //     AND SBQQ__Primary__c = true
+            //     AND SBQQ__ExpirationDate__c < :today
+            //     AND SBQQ__ExpirationDate__c >= :twelveMonthsAgo
+            //     AND SAPQuoteID__c != null
+            // )
+            // ORDER BY CreatedDate DESC
             LIMIT :limitSize
         ];
         if (quotes.isEmpty()) return new List<QuoteWithLinesDto>();
@@ -37,15 +58,15 @@ global with sharing class CPQQuoteWithLinesApi {
         for (SBQQ__Quote__c q : quotes) quoteIds.add(q.Id);
 
         // --- Query lines once and group by Quote ---
-        // Add/adjust fields to your needs; keeping it lean for Experience Cloud.
         List<SBQQ__QuoteLine__c> lines = [
             SELECT Id,
                    Name,
                    SBQQ__Quote__c,
                    SBQQ__Product__r.Name,
+                   SBQQ__Product__r.Part_Number__c,
                    SBQQ__Quantity__c,
                    SBQQ__ListPrice__c,
-                   SBQQ__NetPrice__c,
+                   Net_Price__c,
                    SBQQ__Discount__c
             FROM SBQQ__QuoteLine__c
             WHERE SBQQ__Quote__c IN :quoteIds
@@ -77,19 +98,31 @@ global with sharing class CPQQuoteWithLinesApi {
 
     // DTOs
     global class QuoteWithLinesDto {
+        
         public Id Id;
-        public String Name;
+        public String Name;  
         public String Status;
         public Boolean Primary;
+        public Date ValidUntil;
+        public Decimal NetAmount;
+        public Integer Items;
+        public DateTime CreatedDate;
+
         public List<QuoteLineDto> Lines;
 
         public QuoteWithLinesDto() {}
         public QuoteWithLinesDto(SBQQ__Quote__c q) {
-            Id          = q.Id;
-            Name        = q.Name;
-            Status      = q.SBQQ__Status__c;
-            Primary     = q.SBQQ__Primary__c;
-            Lines       = new List<QuoteLineDto>();
+            
+            Id         = q.Id;
+            Name       = q.Name; 
+            Status     = q.SBQQ__Status__c;
+            Primary    = q.SBQQ__Primary__c;
+            CreatedDate = q.CreatedDate;
+            ValidUntil = q.SBQQ__ExpirationDate__c;
+            NetAmount  = q.SBQQ__NetAmount__c;
+            Items      = (q.SBQQ__LineItemCount__c == null) ? null : 
+                            Integer.valueOf(q.SBQQ__LineItemCount__c);
+            Lines = new List<QuoteLineDto>();
         }
     }
 
@@ -109,7 +142,7 @@ global with sharing class CPQQuoteWithLinesApi {
             ProductName = l.SBQQ__Product__r != null ? l.SBQQ__Product__r.Name : null;
             Quantity    = l.SBQQ__Quantity__c;
             ListPrice   = l.SBQQ__ListPrice__c;
-            NetPrice    = l.SBQQ__NetPrice__c;
+            NetPrice    = l.Net_Price__c;
             Discount    = l.SBQQ__Discount__c;
         }
     }

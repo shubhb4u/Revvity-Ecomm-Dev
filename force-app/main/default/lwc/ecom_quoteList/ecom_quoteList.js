@@ -1,6 +1,7 @@
 import { LightningElement, track, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getQuoteData from '@salesforce/apex/ECOM_quoteListController.getQuotes';
+// import getQuoteData from '@salesforce/apex/CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
 
 export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
 
@@ -38,47 +39,49 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         }
     }
 
+
     processQuotes() {
+        const today = this.startOfDay(new Date());
+
         this.allQuotes = (this.quotes || []).map(q => {
-            const s = (q.SBQQ__Status__c || '').toLowerCase();
-            const expiresOn = this.formatDateForUI(q.SBQQ__ExpirationDate__c);
+            // Parse expiration as date-only to avoid timezone issues
+            const exp = q.SBQQ__ExpirationDate__c ? new Date(q.SBQQ__ExpirationDate__c) : null;
+            const isExpired = exp ? this.startOfDay(exp) < today : false; // No expiration = Active
+            const displayStatus = isExpired ? 'Expired' : 'Active';
+
             return {
                 ...q,
-                _status: s,
-                statusClass: this.getStatusClass(s),
-                expiresOn: expiresOn,
-                expiresOnClass: this.getExpiresOnClass(q.SBQQ__Status__c),
-                hasExpiresOn: q.SBQQ__ExpirationDate__c !== null && q.SBQQ__ExpirationDate__c !== undefined && q.SBQQ__ExpirationDate__c !== '',
-                hasQuoteNumber: q.Name !== null && q.Name !== undefined && q.Name !== '',
-                hasTotalAmount: q.SBQQ__NetAmount__c !== null && q.SBQQ__NetAmount__c !== undefined && q.SBQQ__NetAmount__c !== '',
-                hasItems: q.SBQQ__LineItemCount__c !== null && q.SBQQ__LineItemCount__c !== undefined && q.SBQQ__LineItemCount__c !== '',
-                hasStatus: q.SBQQ__Status__c !== null && q.SBQQ__Status__c !== undefined && q.SBQQ__Status__c !== ''
+
+                // Computed “display” status for UI
+                _status: displayStatus,
+
+                // Classes driven by the computed display status
+                statusClass: this.getStatusClass(displayStatus),
+                expiresOnClass: this.getExpiresOnClass(displayStatus),
+
+                // UI helpers
+                expiresOn: this.formatDateForUI(q.SBQQ__ExpirationDate__c),
+                hasExpiresOn: !!q.SBQQ__ExpirationDate__c,
+                hasQuoteNumber: !!q.Name,
+                hasTotalAmount: q.SBQQ__NetAmount__c !== null && q.SBQQ__NetAmount__c !== undefined,
+                hasItems: q.SBQQ__LineItemCount__c !== null && q.SBQQ__LineItemCount__c !== undefined,
             };
         });
 
-        // Determine if quote is active (not expired) based on expiration date
-        const today = new Date();
-        this.activeQuotes = this.allQuotes.filter(q => {
-            const expDate = new Date(q.SBQQ__ExpirationDate__c);
-            return expDate >= today;
-        });
-
-        this.expiredQuotes = this.allQuotes.filter(q => {
-            const expDate = new Date(q.SBQQ__ExpirationDate__c);
-            return expDate < today;
-        });
+        // Segment just once, based on the computed display status
+        this.activeQuotes = this.allQuotes.filter(q => q._status === 'Active');
+        this.expiredQuotes = this.allQuotes.filter(q => q._status === 'Expired');
 
         this.applySegment('active');
     }
 
-    get isLoadMoreEnabled() {
-        return this.isLoadMore && this.isQuoteHistoryPage;
-    }
+    /** Normalize to start of day to avoid time component causing off-by-one */
+    startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
 
     getStatusClass(status) {
         const s = (status || '').toLowerCase();
         return 'ecomm-value ' + (
-            s === 'active' || s === 'draft' ? 'ecomm-status--active' :
+            s === 'active' ? 'ecomm-status--active' :
                 s === 'expired' ? 'ecomm-status--expired' :
                     'ecomm-status--neutral'
         );
@@ -87,6 +90,10 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
     getExpiresOnClass(status) {
         const s = (status || '').toLowerCase();
         return s === 'expired' ? 'ecomm-value ecomm-status--expired' : 'ecomm-value';
+    }
+
+    get isLoadMoreEnabled() {
+        return this.isQuoteHistoryPage && this.isLoadMore && this.totalQuotes > this.defaultListSize;
     }
 
     applySegment(segment) {
@@ -126,9 +133,7 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         this.currentPageNumber = parseInt(pageNumber);
         const start = (this.currentPageNumber - 1) * this.defaultListSize;
         const end = this.defaultListSize * this.currentPageNumber;
-        // this.fromRecords = start == 0 ? start : start + 1;
-    this.fromRecords = start === 0 ? 1 : start + 1;
-
+        this.fromRecords = start === 0 ? 1 : start + 1;
         this.toRecords = end > this.totalQuotes ? this.totalQuotes : end;
         this.quotesToDisplay = this.myQuotes.slice(start, end);
     }
@@ -170,7 +175,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         this.fromRecords = 1;
         this.toRecords = this.defaultListSize;
         this.quotesToDisplay = [];
-        //update default size
         this.nextLoadCount = this.defaultListSize;
         if (this.defaultListSize > this.totalQuotes) {
             this.nextLoadCount = this.totalQuotes;
@@ -178,7 +182,9 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         }
 
         for (let i = 0; i < this.nextLoadCount; i++) {
-            this.quotesToDisplay.push(this.myQuotes[i]);
+            if (this.myQuotes[i]) {
+                this.quotesToDisplay.push(this.myQuotes[i]);
+            }
         }
         if (this.totalQuotes > this.defaultListSize) {
             this.isLoadMore = true;
@@ -187,17 +193,15 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
 
     sortData(fieldname, direction) {
         let parseData = JSON.parse(JSON.stringify(this.myQuotes));
-        // Return the value stored in the field
+
+        // Don't need field mapping since we're using Salesforce field names directly
         let keyValue = (a) => {
             return a[fieldname];
         };
-        // cheking reverse direction
         let isReverse = direction === 'asc' ? 1 : -1;
-        // sorting data
         parseData.sort((x, y) => {
             x = keyValue(x) ? keyValue(x) : '';
             y = keyValue(y) ? keyValue(y) : '';
-            // sorting values based on direction
             return isReverse * ((x > y) - (y > x));
         });
         this.myQuotes = parseData;
@@ -244,4 +248,5 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
             }
         });
     }
+
 }

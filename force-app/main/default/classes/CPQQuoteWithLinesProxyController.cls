@@ -6,16 +6,13 @@ public with sharing class CPQQuoteWithLinesProxyController {
     @AuraEnabled(cacheable=true)
     public static List<Map<String, Object>> fetchMyQuotesWithLines() {
         // Resolve tenant isolation (Contact -> Account)
-        //User u = [SELECT Id, ContactId FROM User WHERE Id = :UserInfo.getUserId()];
-        //For Testing Purpose Only
-        User u = [SELECT Id, ContactId FROM User WHERE Id = : '005O500000Y5I41IAF'];
+        User u = [SELECT Id, ContactId FROM User WHERE Id = :UserInfo.getUserId()];
         if (u.ContactId == null) return new List<Map<String, Object>>();
-        Id accountId = [SELECT AccountId FROM Contact WHERE Id = :u.ContactId].AccountId;
-        if (accountId == null) return new List<Map<String, Object>>();
+        String contactId = u.ContactId;
 
         // Build REST endpoint
-        String endpoint = '/services/apexrest/cpq/quotesWithLines?accountId='
-            + EncodingUtil.urlEncode((String)accountId, 'UTF-8')
+        String endpoint = '/services/apexrest/cpq/quotesWithLines?contactId='
+            + EncodingUtil.urlEncode(contactId, 'UTF-8')
             + '&limit=100&linesLimit=1000';
 
         HttpRequest req = new HttpRequest();

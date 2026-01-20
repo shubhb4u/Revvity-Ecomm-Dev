@@ -97,7 +97,7 @@
                 <div class="ecomm-field-col">
                   <template if:true={quote.hasExpiresOn}>
                     <div class="ecomm-label">Valid until</div>
-                    <div class={quote.expiresOnClass}>{quote.expiresOn}</div>
+                    <div class={quote.expiresOnClass}>{quote.SBQQ__ExpirationDate__c}</div>
                   </template>
                 </div>
 
@@ -119,10 +119,8 @@
 
                 <!-- Status -->
                 <div class="ecomm-field-col">
-                  <template if:true={quote.hasStatus}>
                     <div class="ecomm-label">Status</div>
-                    <div class={quote.statusClass}>{quote.SBQQ__Status__c}</div>
-                  </template>
+                    <div class={quote.statusClass}>{quote._status}</div>
                 </div>
 
                 <!-- View details link -->
