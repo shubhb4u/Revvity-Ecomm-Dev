@@ -144,6 +144,69 @@
     }
 }
 
+.slds-card__body{
+    padding: 0;
+}
+
+.slds-card__body_inner .slds-grid {
+  column-gap: 12px;  
+  row-gap: 8px;
+}
+
+/* Card body grid container */
+.ecomm-card-body-grid {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-start;
+  max-width: 80%;
+}
+
+/* Field columns - default responsive */
+.ecomm-field-col {
+  flex: 1 1 auto;
+  min-width: 100px;
+}
+
+
+/* Labels & values (tuned to Figma) */
+.ecomm-label {
+  font-size: 14px;
+  font-weight: 700;            
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;          
+}
+
+.ecomm-value {
+  font-size: 18px;
+  font-weight: 400;           
+  color: var(--ecomm-text);
+}
+
+.ecomm-value--danger,
+.ecomm-status--expired { color: var(--ecomm-danger); }
+.ecomm-status--active { color: var(--ecomm-success); }
+
+/* Mobile: 2 columns with proper wrapping */
+@media (max-width: 479px) {
+  .ecomm-card-body-grid {
+    gap: 12px 12px;
+  }
+  
+  .ecomm-field-col {
+    flex: 0 1 calc(50% - 6px);
+    min-width: 70px;
+  }
+  
+  .ecomm-details-link {
+    flex: 1 1 100%;
+    order: 10;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+}
+
+
 .stat-label {
     display: block;
     color: var(--ecomm-text);

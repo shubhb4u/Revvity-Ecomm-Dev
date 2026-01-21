@@ -5,7 +5,7 @@
         <!-- Top nav / back -->
         <div class="ecomm-link slds-p-vertical_medium slds-border_bottom">
             <div class="slds-grid slds-grid_vertical-align-center">
-                <div class="slds-col">
+                <div class="slds-col" onclick={handleBackClick}>
                     <lightning-button-icon icon-name="utility:chevronleft" variant="bare" class="back-icon"
                         alternative-text="Back">
                     </lightning-button-icon>
@@ -25,39 +25,33 @@
                 </div>
             </div>
 
-            <!-- Stats row: 4 blocks, responsive -->
-            <div class="stats-wrap slds-grid slds-wrap slds-m-top_medium">
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
-                    <span class="stat-label">Valid until :</span>
-                    <span class="stat-value">
-                        <template if:true={expirationDate}>
-                            <lightning-formatted-date-time value={expirationDate} year="numeric" month="long"
-                                day="2-digit"></lightning-formatted-date-time>
-                        </template>
-                        <template if:false={expirationDate}>—</template>
-                    </span>
+            <div class="slds-card__body slds-card__body_inner slds-m-top_large">
+              <div class="ecomm-card-body-grid">
+
+                <!-- Valid until -->
+                <div class="ecomm-field-col">
+                  <div class="ecomm-label">Valid until</div>
+                  <div class={currentQuote.expiresOnClass}>{currentQuote.expiresOn}</div>
                 </div>
 
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
-                    <span class="stat-label">Total:</span>
-                    <span class="stat-value">
-                        <template if:true={grandTotal}>
-                            <lightning-formatted-number value={grandTotal} format-style="currency"
-                                currency-code={currencyCode}></lightning-formatted-number>
-                        </template>
-                        <template if:false={grandTotal}>—</template>
-                    </span>
+                <!-- Total -->
+                <div class="ecomm-field-col">
+                  <div class="ecomm-label">Total</div>
+                  <div class="ecomm-value">${currentQuote.SBQQ__NetAmount__c}</div>
                 </div>
 
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
-                    <span class="stat-label">Items:</span>
-                    <span class="stat-value">{itemsCount}</span>
+                <!-- Items -->
+                <div class="ecomm-field-col">
+                  <div class="ecomm-label">Items</div>
+                  <div class="ecomm-value">{currentQuote.SBQQ__LineItemCount__c}</div>
                 </div>
 
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
-                    <span class="stat-label">Status:</span>
-                    <span class="stat-value status-active">{status}</span>
+                <!-- Status -->
+                <div class="ecomm-field-col">
+                    <div class="ecomm-label">Status</div>
+                    <div class={currentQuote.statusClass}>{currentQuote._status}</div>
                 </div>
+              </div>
             </div>
 
             <!-- Section title -->
@@ -150,7 +144,7 @@
 
 
             <!-- Lines -->
-            <template for:each={lines} for:item="line" for:index="i">
+            <template for:each={currentQuote.Lines} for:item="line" for:index="i">
                 <!-- Two-row layout -->
                 <div key={line.Id} class="row row-2line">
                     <!-- Row 1: index + name (name spans across) -->
@@ -164,8 +158,8 @@
 
                     <!-- NEW: meta cell (holds Part# and Product description) -->
                     <div class="cell name-meta">
-                        <div class="subtext">Part#: <span class="cellValue">{line.ProductCode}</span></div>
-                        <div class="subtext">Product description: {line.ProductFamily}</div>
+                        <div class="subtext">Part#: <span class="cellValue">{line.PartNumber}</span></div>
+                        <div class="subtext">Product description: {line.Description}</div>
                     </div>
 
                     <div class="cell price list-price">
@@ -205,7 +199,7 @@
                 <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
                     <div class="totals-label">Freight</div>
                     <div class="totals-value">
-                        <lightning-formatted-number value={freight} format-style="currency"
+                        <lightning-formatted-number value={currentQuote.TotalFreight} format-style="currency"
                             currency-code={currencyCode}></lightning-formatted-number>
                     </div>
                 </div>
@@ -213,7 +207,7 @@
                 <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
                     <div class="totals-label">Tax</div>
                     <div class="totals-value">
-                        <lightning-formatted-number value={tax} format-style="currency"
+                        <lightning-formatted-number value={currentQuote.TotalTax} format-style="currency"
                             currency-code={currencyCode}></lightning-formatted-number>
                     </div>
                 </div>
@@ -233,7 +227,7 @@
                     class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread totals-row--grand">
                     <div class="totals-label totals-label--grand">Total:</div>
                     <div class="totals-value totals-value--grand">
-                        <lightning-formatted-number value={grandTotal} format-style="currency"
+                        <lightning-formatted-number value={currentQuote.GrandTotal} format-style="currency"
                             currency-code={currencyCode}></lightning-formatted-number>
                     </div>
                 </div>
