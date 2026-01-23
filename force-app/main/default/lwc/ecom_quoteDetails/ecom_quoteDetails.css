@@ -1,4 +1,3 @@
-
 :host {
     --ecomm-text: #000000;
     --ecomm-subtle: #6b7280;
@@ -45,6 +44,7 @@
 /* Base wrapper: apply brand font + color */
 .page {
     padding: 1rem;
+    margin: 2rem;
 }
 
 .container {
@@ -63,6 +63,10 @@
   text-decoration: none;
 }
 
+.back-icon {
+  position: relative;
+  top: -3px; 
+}
 
 .header-row {
     margin-top: 1rem;
@@ -773,4 +777,3 @@
 }
 .totals-row { display: grid; grid-template-columns: 1fr auto; align-items: center; }
 .totals-value { text-align: right; color: var(--ecomm-text); }
-

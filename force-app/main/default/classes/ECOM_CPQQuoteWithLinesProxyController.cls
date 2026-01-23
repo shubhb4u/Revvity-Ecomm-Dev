@@ -1,10 +1,10 @@
-public with sharing class CPQQuoteWithLinesProxyController {
+public with sharing class ECOM_CPQQuoteWithLinesProxyController {
     /**
      * Returns quotes with lines for the current Experience Cloud user’s Account
      * by calling the CPQ REST via Named Credential (Integration User session).
      */
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> fetchMyQuotesWithLines() {
+    public static List<Map<String, Object>> fetchMyQuotesWithLines(String quoteId) {
         // Resolve tenant isolation (Contact -> Account)
         User u = [SELECT Id, ContactId FROM User WHERE Id = :UserInfo.getUserId()];
         if (u.ContactId == null) return new List<Map<String, Object>>();
@@ -24,17 +24,23 @@ public with sharing class CPQQuoteWithLinesProxyController {
         System.debug('res.getBody():::::'+res.getBody());
 		List<Map<String, Object>> aDataResultObjectList = new List<Map<String, Object>>();
         if (res.getStatusCode() >= 200 && res.getStatusCode() < 300) {
-            // JSON [{ Id, Name, ..., Lines: [{...}, ...] }, ...]
             List<Object> dataResults = (List<Object>)JSON.deserializeUntyped(res.getBody());
-            System.debug('dataResults::::'+dataResults);
-             for (Object o : dataResults)
-             {
-                 Map<String, object> aDataResultObject = (Map<String,Object>) o;
-                 aDataResultObjectList.add(aDataResultObject);
-                 // then all your logic here
-             }
-            System.debug('aDataResultObjectList::::'+aDataResultObjectList);
+            
+            for (Object o : dataResults) {
+                Map<String, object> aDataResultObject = (Map<String,Object>) o;
+                
+                // Filter logic
+                if (quoteId != null) {
+                    if (quoteId == String.valueOf(aDataResultObject.get('Id'))) {
+                        aDataResultObjectList.add(aDataResultObject);
+                        break;
+                    }
+                } else {
+                    aDataResultObjectList.add(aDataResultObject);
+                }
+            }
             return aDataResultObjectList;
+
         } else {
             // Optionally log res.getStatus()/Body
             throw new AuraHandledException('Failed to fetch quotes and lines. Please try again later.');

@@ -1,79 +1,49 @@
 ﻿import { LightningElement, track, api, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
-import getQuoteById from '@salesforce/apex/CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
-
+import getQuoteById from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
+import getCPQQuotesDocumentApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getCPQQuotesDocumentApi';
+import getCPQQuoteStatusApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getCPQQuoteStatusApi';
+import getbaseUrl from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getbaseUrl';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement) {
-  @api recordId = '0Q0STATICQUOTE00001';
-  @track quoteNumber = '123456789';
-  @track status = 'Active';
-  @track currencyCode = 'USD';
 
-  // UI-only static date
-  @track expirationDate = '2025-06-06T00:00:00.000Z';
+  quoteNumber;
+  status = 'Active';
+  currencyCode = 'USD';
+  expirationDate;
+  baseurl = '';
+  // @api quoteId;
+  res;
+  isActive = true;
+  isLoading = false;
+  subtotal = 0.0;
+  freight = 0.0;
+  tax = 0.0;
+  savings = 0.0;
+  error = null;
+  quoteId;
+  quotes;
+  @track currentQuote = {
+    SBQQ__ExpirationDate__c: null,
+    SBQQ__NetAmount__c: 0,
+    SBQQ__LineItemCount__c: 0,
+    Lines: [],
+    _status: 'Active',
+    statusClass: 'ecomm-value ecomm-status--active',
+    expiresOnClass: 'ecomm-value',
+    expiresOn: ''
+  };
 
-  /* ========= Main lines (already present) ========= */
-  @track lines = [
-    {
-      Id: 'QLI-1',
-      ProductName: 'Liconic BCX44 IC SA (33.50C, max. 95% RH) (91183596)',
-      ProductCode: 'HHCUSHTSMISC',
-      ProductFamily: 'Miscellaneous',
-      ListPrice: 120.0,
-      UnitNetPrice: 120.0,
-      Quantity: 1,
-      LineTotal: 120.0,
-      Optional: false
-    },
-    {
-      Id: 'QLI-2',
-      ProductName: 'Liconic BCX44 IC SA (33.50C, max. 95% RH) (91183596)',
-      ProductCode: 'HHCUSHTSMISC',
-      ProductFamily: 'Miscellaneous',
-      ListPrice: 120.0,
-      UnitNetPrice: 120.0,
-      Quantity: 1,
-      LineTotal: 120.0,
-      Optional: false
-    },
-    {
-      Id: 'QLI-3',
-      ProductName: 'Liconic BCX44 IC SA (33.50C, max. 95% RH) (91183596)',
-      ProductCode: 'HHCUSHTSMISC',
-      ProductFamily: 'Miscellaneous',
-      ListPrice: 120.0,
-      UnitNetPrice: 120.0,
-      Quantity: 1,
-      LineTotal: 120.0,
-      Optional: false
+  @wire(getbaseUrl)
+  wiredata(result) {
+    if (result.data) {
+      this.baseurl = result.data;
+      console.log('Base URL:', this.baseurl);
+    } else if (result.error) {
+      console.error('Base URL Error:', result.error);
     }
-  ];
-
-  /* ========= NEW: Optional Items (used by the Optional Items table) ========= */
-  @track optionalLines = [
-    {
-      Id: 'OLI-1',
-      ProductName: 'Liconic BCX44 IC SA (33.50C, max. 95% RH) (91183596)',
-      ProductCode: 'HHCUSHTSMISC',
-      ProductFamily: 'Miscellaneous',
-      ListPrice: 120.0,
-      UnitNetPrice: 120.0,
-      Quantity: 1,
-      LineTotal: 120.0,
-      Optional: true
-    },
-    {
-      Id: 'OLI-2',
-      ProductName: 'Liconic BCX44 IC SA (33.50C, max. 95% RH) (91183596)',
-      ProductCode: 'HHCUSHTSMISC',
-      ProductFamily: 'Miscellaneous',
-      ListPrice: 120.0,
-      UnitNetPrice: 120.0,
-      Quantity: 1,
-      LineTotal: 120.0,
-      Optional: true
-    }
-  ];
+  }
 
   /* ========= Shipping / Billing mock values (unchanged) ========= */
   @track shipCompany = 'Lorem company name';
@@ -105,96 +75,94 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
   @track invoicePostal = '';
   @track invoiceCountry = 'Italy';
 
-  /* ========= Totals (UI-only) ========= */
-  get itemsCount() {
-    return (this.lines?.length || 0) + (this.optionalLines?.length || 0);
-  }
-
-  get subtotal() {
-    return (this.lines || []).reduce((sum, l) => sum + (l.LineTotal || 0), 0);
-  }
-
-  // You can adjust these as needed for your mock
-  @track freight = 0.0;
-  @track tax = 0.0;
-  @track savings = 0.0;
-
-  // Grand total for the main Items block
-  get grandTotal() {
-    return (this.subtotal + this.freight + this.tax) - this.savings;
-  }
-
-  /* ========= NEW: Optional totals ========= */
-
-  // Sum of optional lines only
-  get optionalSubtotal() {
-    return (this.optionalLines || []).reduce((sum, l) => sum + (l.LineTotal || 0), 0);
-  }
-
-  // If your Optional Items 'Total' card should show ONLY optional items:
-  get optionalGrandTotal() {
-    return this.optionalSubtotal;
-  }
-
-  get grandTotalWithOptional() {
-    return this.grandTotal + this.optionalSubtotal;
-  }
-
-  @track isLoading = false;
-  @track error = null;
-
-
-  //Wire changes for backend -----------------------------------------
-  quoteId;
-  quotes;
-  error;
-  @track currentQuote = {
-    SBQQ__ExpirationDate__c: null,
-    SBQQ__NetAmount__c: 0,
-    SBQQ__LineItemCount__c: 0,
-    Lines: [],
-    _status: 'Active',
-    statusClass: 'ecomm-value ecomm-status--active',
-    expiresOnClass: 'ecomm-value',
-    expiresOn: ''
-  };
 
   connectedCallback() {
 
+    console.log('connectedCallback');
+    this.loadStatus();
     const params = new URLSearchParams(window.location.search);
     this.quoteId = params.get('id') || params.get('c__id') || params.get('recordId');
     if (this.quoteId) this.loadQuoteDetails();
-
   }
 
-  loadQuoteDetails() {
-    getQuoteById({ quoteId: this.quoteId })
-      .then(result => {
-        this.quotes = result;
-        console.log('Quote Details from integration class:', this.quotes);
-        this.processQuotes();
-      })
-      .catch(error => {
-        this.error = error;
-      });
+  async handleDownload() {
+    this.loading = true;
+    try {
+      const dto = await getCPQQuotesDocumentApi({ quoteId: this.quoteId });
+      if (dto.message == 'Success') {
+        console.log('Download URL:', this.baseurl + dto.downloadUrl);
+        window.location.href = `${this.baseurl}${dto.downloadUrl}`;
+      } else {
+        this.toast('Download failed', dto?.message || 'Unable to get download URL', 'error');
+      }
+    } catch (e) {
+      const msg = e?.body?.message || e?.message || 'Unexpected error';
+      this.toast('Error', msg, 'error');
+    } finally {
+      this.loading = false;
+    }
   }
+
+  toast(title, message, variant) {
+    this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
+  }
+
+  async loadStatus() {
+    try {
+      const url = new URL(window.location.href);
+      this.quoteId = url.searchParams.get('id');
+      console.log('quote id from url', this.quoteId);
+      const dto = await getCPQQuoteStatusApi({ quoteId: this.quoteId });
+      if (dto.success) {
+        this.isActive = dto.success;
+      } else {
+        this.isActive = false;
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error fetching status of quote pdf.');
+    }
+  }
+
+
+
+  async loadQuoteDetails() {
+    this.isLoading = true;
+    this.error = null;
+
+    try {
+      const result = await getQuoteById({ quoteId: this.quoteId });
+      this.quotes = result;
+      this.processQuotes();
+    } catch (e) {
+      this.error = e;
+      console.error('Error fetching quote details:', e);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 
   processQuotes() {
-    const today = this.startOfDay(new Date());
 
+    const today = this.startOfDay(new Date());
     // Extract single quote from array (API returns single matching quote)
     const quote = (this.quotes && this.quotes.length > 0) ? this.quotes[0] : null;
     if (!quote) return;
 
+    console.log('Processing quote:', quote);
+
     // Parse expiration as date-only to avoid timezone issues
-    const exp = quote.SBQQ__ExpirationDate__c ? new Date(quote.SBQQ__ExpirationDate__c) : null;
+    const exp = quote.ValidUntil ? new Date(quote.ValidUntil) : null;
     const isExpired = exp ? this.startOfDay(exp) < today : false; // No expiration = Active
     const displayStatus = isExpired ? 'Expired' : 'Active';
 
     // Set individual properties for template binding
     this.quoteNumber = quote.Name || '';
     this.status = displayStatus;
-    this.expirationDate = quote.SBQQ__ExpirationDate__c || '';
+    this.expirationDate = quote.ValidUntil || '';
+
+    console.log('Display status:', displayStatus, 'Expires on:', quote.ValidUntil);
 
     // Store processed quote with computed properties
     this.currentQuote = {
@@ -202,8 +170,15 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
       _status: displayStatus,
       statusClass: this.getStatusClass(displayStatus),
       expiresOnClass: this.getExpiresOnClass(displayStatus),
-      expiresOn: this.formatDateForUI(quote.SBQQ__ExpirationDate__c),
+      expiresOn: this.formatDateForUI(quote.ValidUntil),
     };
+
+    console.log('Current quote updated:', this.currentQuote);
+
+    // Calculate subtotal from line items
+    this.subtotal = (quote.Lines || []).reduce((sum, line) => {
+      return sum + (line.LineTotal || 0);
+    }, 0);
   }
 
   startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
@@ -249,5 +224,4 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
       }
     });
   }
-
 }

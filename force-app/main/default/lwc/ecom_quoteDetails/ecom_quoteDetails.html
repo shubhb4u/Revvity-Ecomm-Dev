@@ -1,5 +1,16 @@
 <template>
 
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+      <div class="slds-spinner_container">
+        <div class="slds-spinner slds-spinner_medium" aria-hidden="false" role="status">
+          <div class="slds-spinner__dot-a"></div>
+          <div class="slds-spinner__dot-b"></div>
+        </div>
+      </div>
+    </template>
+
+    <template if:false={isLoading}>
     <div class="page">
 
         <!-- Top nav / back -->
@@ -20,12 +31,15 @@
                 <div class="slds-col slds-p-right_small">
                     <h1 class="quote-title">Quote number: {quoteNumber}</h1>
                 </div>
+                <template if:true={isActive}>
                 <div class="slds-col slds-text-align_right">
-                    <button class="btn btn-pill btn-outline">Download Quote</button>
+                    <button class="btn btn-pill btn-outline" title="Download the quote as PDF" onclick={handleDownload}>
+                        Download Quote</button>
                 </div>
+                </template>
             </div>
 
-            <div class="slds-card__body slds-card__body_inner slds-m-top_large">
+            <div class="slds-card__body slds-card__body_inner slds-m-top_medium">
               <div class="ecomm-card-body-grid">
 
                 <!-- Valid until -->
@@ -37,13 +51,13 @@
                 <!-- Total -->
                 <div class="ecomm-field-col">
                   <div class="ecomm-label">Total</div>
-                  <div class="ecomm-value">${currentQuote.SBQQ__NetAmount__c}</div>
+                  <div class="ecomm-value">${currentQuote.NetAmount}</div>
                 </div>
 
                 <!-- Items -->
                 <div class="ecomm-field-col">
                   <div class="ecomm-label">Items</div>
-                  <div class="ecomm-value">{currentQuote.SBQQ__LineItemCount__c}</div>
+                  <div class="ecomm-value">{currentQuote.Items}</div>
                 </div>
 
                 <!-- Status -->
@@ -68,6 +82,7 @@
                             {shipStreet}<br />
                             {shipCity}, {shipState} {shipPostal}<br />
                             {shipCountry}
+                            <!-- {currentQuote.SoldToAddress} -->
                         </div>
 
                         <div class="info-title slds-m-top_medium">Attention / recipient</div>
@@ -90,6 +105,7 @@
                             {billStreet}<br />
                             {billCity}, {billState} {billPostal}<br />
                             {billCountry}
+                            <!-- {currentQuote.PayerAddress} -->
                         </div>
 
                         <div class="info-title slds-m-top_medium">Email to invoice</div>
@@ -199,7 +215,9 @@
                 <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
                     <div class="totals-label">Freight</div>
                     <div class="totals-value">
-                        <lightning-formatted-number value={currentQuote.TotalFreight} format-style="currency"
+                        <!-- <lightning-formatted-number value={currentQuote.TotalFreight} format-style="currency"
+                            currency-code={currencyCode}></lightning-formatted-number> -->
+                        <lightning-formatted-number value={freight} format-style="currency"
                             currency-code={currencyCode}></lightning-formatted-number>
                     </div>
                 </div>
@@ -207,7 +225,9 @@
                 <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
                     <div class="totals-label">Tax</div>
                     <div class="totals-value">
-                        <lightning-formatted-number value={currentQuote.TotalTax} format-style="currency"
+                        <!-- <lightning-formatted-number value={currentQuote.TotalTax} format-style="currency"
+                            currency-code={currencyCode}></lightning-formatted-number> -->
+                        <lightning-formatted-number value={tax} format-style="currency"
                             currency-code={currencyCode}></lightning-formatted-number>
                     </div>
                 </div>
@@ -234,82 +254,7 @@
             </div>
         </div>
     </div>
-
-
-    <!-- Optional Items -->
-    <div class="slds-m-top_xx-large optional-section">
-        <h2 class="section-title">Optional Items</h2>
-        <p class="opt-subtitle">Not included in the quotation total</p>
-
-        <!-- Optional items table (same two-row pattern as Items) -->
-        <div class="opt-items-table slds-m-top_small">
-            <!-- Header row -->
-            <div class="row header">
-                <div class="cell index">#</div>
-                <div class="cell name">Name</div>
-                <div class="cell price">Unit list price</div>
-                <div class="cell price">Unit net price</div>
-                <div class="cell qty">Quantity</div>
-                <div class="cell total">Line total</div>
-            </div>
-
-            <!-- Lines -->
-            <template for:each={optionalLines} for:item="oline" for:index="j">
-                <div key={oline.Id} class="row row-2line">
-                    <!-- Row 1: index + name -->
-                    <div class="cell index index-top">{j}.</div>
-                    <div class="cell name name-top">
-                        <div class="line-name">{oline.ProductName}</div>
-                    </div>
-
-                    <!-- Row 2: index spacer + meta + prices + qty + total -->
-                    <div class="cell index index-bottom"></div>
-                    <div class="cell name-meta">
-                        <div class="subtext">Part#: <span class="cellValue">{oline.ProductCode}</span></div>
-                        <div class="subtext">Product description: {oline.ProductFamily}</div>
-                    </div>
-
-                    <div class="cell price list-price">
-                        <lightning-formatted-number value={oline.ListPrice} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
-                    </div>
-
-                    <div class="cell price net-price">
-                        <lightning-formatted-number value={oline.UnitNetPrice} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
-                    </div>
-
-                    <div class="cell qty qty-cell">{oline.Quantity}</div>
-
-                    <div class="cell total total-cell">
-                        <lightning-formatted-number value={oline.LineTotal} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
-                    </div>
-                </div>
-            </template>
-        </div>
-
-        <!-- Red italic note -->
-        <p class="opt-warning slds-m-top_small">
-            Items listed as optional are not considered in calculations for freight and taxes where they apply.
-            Consequently, these amounts can change if you elect to add optional items to your order.
-        </p>
-
-        <!-- Optional Items Total (compact card) -->
-        <div class="optional-total-wrap slds-m-top_xx-large">
-            <h2 class="section-title slds-m-bottom_large">Total</h2>
-            <div class="totals-card optional-card">
-                <div
-                    class="totals-row totals-row--grand slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-                    <div class="totals-label totals-label--grand">Total:</div>
-                    <div class="totals-value totals-value--grand">
-                        <lightning-formatted-number value={grandTotalWithOptional} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-    </div>
+    </template>
 
 </template>

@@ -1,5 +1,17 @@
 <template>
   <div class="ecomm slds-p-around_medium">
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+      <div class="slds-spinner_container">
+        <div class="slds-spinner slds-spinner_medium" aria-hidden="false" role="status">
+          <div class="slds-spinner__dot-a"></div>
+          <div class="slds-spinner__dot-b"></div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Page Content -->
+    <template if:false={isLoading}>
     <!-- Page Header -->
     <header class="slds-grid slds-wrap slds-m-bottom_small slds-grid_vertical-align-center">
       <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
@@ -24,13 +36,20 @@
     <div class="slds-grid slds-wrap slds-m-vertical_medium">
 
       <!-- ===== Row 1: "Find a quote" (right aligned, its own row) ===== -->
-      <div class="slds-col slds-size_1-of-1 slds-text-align_right slds-m-bottom_small">
-        <a href="javascript:void(0)" class="ecomm-link">
+      <!--sahithi changes -->
+    <div class="slds-col slds-size_1-of-1 slds-text-align_right slds-m-bottom_small">
+        <a href="javascript:void(0)" class="ecomm-link" onclick={handleOpenSearchModal}>
           <span class="slds-icon_container slds-icon-utility-search ecomm-inline-icon slds-m-right_x-small"
             title="Search" aria-hidden="true"></span>
           Find a quote
         </a>
       </div>
+      <!-- Modal -->
+      <template if:true={showSearchModal}>
+        <c-ecom_quote-search all-quotes={allQuotes} onclose={handleCloseSearchModal}>
+        </c-ecom_quote-search>
+      </template>
+        
 
       <!-- ===== Row 2: Count (left) + Sort combobox (right) ===== -->
       <div class="slds-col slds-size_1-of-1">
@@ -65,7 +84,7 @@
     </div>
 
     <!-- Quote List -->
-    <template if:true={quotesToDisplay}>
+    <template if:true={hasQuotesToDisplay}>
       <template for:each={quotesToDisplay} for:item="quote">
         <template if:true={quote}>
           <div key={quote.Id} class="slds-card ecomm-card slds-m-bottom_small">
@@ -97,7 +116,7 @@
                 <div class="ecomm-field-col">
                   <template if:true={quote.hasExpiresOn}>
                     <div class="ecomm-label">Valid until</div>
-                    <div class={quote.expiresOnClass}>{quote.SBQQ__ExpirationDate__c}</div>
+                    <div class={quote.expiresOnClass}>{quote.expiresOn}</div>
                   </template>
                 </div>
 
@@ -105,7 +124,7 @@
                 <div class="ecomm-field-col">
                   <template if:true={quote.hasTotalAmount}>
                     <div class="ecomm-label">Total</div>
-                    <div class="ecomm-value">${quote.SBQQ__NetAmount__c}</div>
+                    <div class="ecomm-value">${quote.NetAmount}</div>
                   </template>
                 </div>
 
@@ -113,7 +132,7 @@
                 <div class="ecomm-field-col">
                   <template if:true={quote.hasItems}>
                     <div class="ecomm-label">Items</div>
-                    <div class="ecomm-value">{quote.SBQQ__LineItemCount__c}</div>
+                    <div class="ecomm-value">{quote.Items}</div>
                   </template>
                 </div>
 
@@ -136,7 +155,7 @@
         </template>
       </template>
     </template>
-    <template if:false={quotesToDisplay}>
+    <template if:false={hasQuotesToDisplay}>
       <div class="slds-m-top_large slds-text-align_center">
         <p class="slds-text-body_regular slds-m-bottom_small">0 Quotes in My Quotes</p>
       </div>
@@ -153,5 +172,6 @@
         </div>
       </template>
     </div>
+    </template>
   </div>
 </template>

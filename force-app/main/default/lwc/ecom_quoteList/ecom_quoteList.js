@@ -1,7 +1,6 @@
 import { LightningElement, track, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
-import getQuoteData from '@salesforce/apex/ECOM_quoteListController.getQuotes';
-// import getQuoteData from '@salesforce/apex/CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
+import getQuoteData from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
 
 export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
 
@@ -23,19 +22,22 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
     isActiveSelected = false;
     isExpiredSelected = false;
     sortValue = 'newest';
-
+    @track isLoading = false;
     allWiredData = [];
     error;
 
     @wire(getQuoteData)
     wiredQuotes(result) {
+        this.isLoading = true;
         this.allWiredData = result;
         if (result.data) {
             this.quotes = result.data;
-            console.log('this.quotes', this.quotes);
+            console.log('this.quotes from integration User', this.quotes);
             this.processQuotes();
+            this.isLoading = false;
         } else if (result.error) {
             this.error = result.error;
+            this.isLoading = false;
         }
     }
 
@@ -44,27 +46,21 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         const today = this.startOfDay(new Date());
 
         this.allQuotes = (this.quotes || []).map(q => {
-            // Parse expiration as date-only to avoid timezone issues
-            const exp = q.SBQQ__ExpirationDate__c ? new Date(q.SBQQ__ExpirationDate__c) : null;
+            const exp = q.ValidUntil ? new Date(q.ValidUntil) : null;
             const isExpired = exp ? this.startOfDay(exp) < today : false; // No expiration = Active
             const displayStatus = isExpired ? 'Expired' : 'Active';
 
             return {
                 ...q,
-
-                // Computed “display” status for UI
                 _status: displayStatus,
-
                 // Classes driven by the computed display status
                 statusClass: this.getStatusClass(displayStatus),
                 expiresOnClass: this.getExpiresOnClass(displayStatus),
-
-                // UI helpers
-                expiresOn: this.formatDateForUI(q.SBQQ__ExpirationDate__c),
-                hasExpiresOn: !!q.SBQQ__ExpirationDate__c,
+                expiresOn: this.formatDateForUI(q.ValidUntil),
+                hasExpiresOn: !!q.ValidUntil,
                 hasQuoteNumber: !!q.Name,
-                hasTotalAmount: q.SBQQ__NetAmount__c !== null && q.SBQQ__NetAmount__c !== undefined,
-                hasItems: q.SBQQ__LineItemCount__c !== null && q.SBQQ__LineItemCount__c !== undefined,
+                hasTotalAmount: q.NetAmount !== null && q.NetAmount !== undefined,
+                hasItems: q.Items !== null && q.Items !== undefined,
             };
         });
 
@@ -95,6 +91,12 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
     get isLoadMoreEnabled() {
         return this.isQuoteHistoryPage && this.isLoadMore && this.totalQuotes > this.defaultListSize;
     }
+    
+    
+    get hasQuotesToDisplay() {
+        return Array.isArray(this.quotesToDisplay) && this.quotesToDisplay.some(Boolean);
+    }
+
 
     applySegment(segment) {
         this.quotesToDisplay = [];
@@ -112,7 +114,7 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         this.sortData('CreatedDate', 'desc');
 
         this.totalQuotes = this.myQuotes.length;
-        this.fromRecords = 1; // Reset to 1 when changing segments
+        this.fromRecords = 1; 
         this.toRecords = this.defaultListSize > this.totalQuotes ? this.totalQuotes : this.defaultListSize;
         //update default size
         this.nextLoadCount = this.defaultListSize;
@@ -166,10 +168,10 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
             this.sortData('CreatedDate', 'desc');
         }
         if (sortBy == 'items') {
-            this.sortData('SBQQ__LineItemCount__c', 'desc');
+            this.sortData('Items', 'desc');
         }
         if (sortBy == 'totalAmount') {
-            this.sortData('SBQQ__NetAmount__c', 'desc');
+            this.sortData('NetAmount', 'desc');
         }
         this.currentPageNumber = 1;
         this.fromRecords = 1;
@@ -194,7 +196,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
     sortData(fieldname, direction) {
         let parseData = JSON.parse(JSON.stringify(this.myQuotes));
 
-        // Don't need field mapping since we're using Salesforce field names directly
         let keyValue = (a) => {
             return a[fieldname];
         };
@@ -207,7 +208,7 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         this.myQuotes = parseData;
     }
 
-    // Segmented button changes---------------------------------------
+    // Segmented button changes-
     handleActiveQuotes(event) {
         this.applySegment('active');
     }
@@ -249,4 +250,14 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         });
     }
 
+    //sahithi changes
+    @track showSearchModal = false;
+
+    handleOpenSearchModal() {
+        this.showSearchModal = true;
+    }
+
+    handleCloseSearchModal() {
+        this.showSearchModal = false;
+    }
 }

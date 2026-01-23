@@ -110,6 +110,7 @@ export default class Ecom_accountSidebar extends NavigationMixin(LightningElemen
             conditionalOptions.push({ label: 'Favorites', value: 'favorites' });
             if(this.userNavigationConfig['viewFrequentlyPurchased']) conditionalOptions.push({ label: 'Frequently Purchased', value: 'frequentlyPurchased' });
             if(this.userNavigationConfig['viewQuickOrder']) conditionalOptions.push({ label: 'Quick Order', value: 'quickorder' });
+            if(this.userNavigationConfig['viewMyQuotes']) conditionalOptions.push({ label: 'My Quotes', value: 'myquotes' });
             conditionalOptions.push({ label: 'Customer Care', value: 'contactus' });
             if(this.userNavigationConfig['viewLogout']) conditionalOptions.push({ label: 'Logout', value: 'logout' });
         } else {
@@ -120,6 +121,7 @@ export default class Ecom_accountSidebar extends NavigationMixin(LightningElemen
                 { label: 'Orders', value: 'orders' },
                 { label: 'Favorites', value: 'favorites' },
                 { label: 'Quick Order', value: 'quickorder' },
+                { label: 'My Quotes', value: 'myquotes' },
                 { label: 'Customer Care', value: 'contactus' },
                 { label: 'Logout', value: 'logout' },
     
@@ -176,6 +178,7 @@ export default class Ecom_accountSidebar extends NavigationMixin(LightningElemen
         }
         return isView;
     }
+
 
     get isViewFrequentlyPurchasedProducts(){
         let isView = true;
@@ -275,6 +278,9 @@ export default class Ecom_accountSidebar extends NavigationMixin(LightningElemen
             //VRa: punchout changes - End
             case 'quickorder':
                 this.handleQuickOrderClick();
+                break;
+            case 'myquotes':
+                this.handleMyQuotesClick();
                 break;  
             case 'contactus':
                 this.navigateToContactUsPage();
@@ -329,10 +335,11 @@ export default class Ecom_accountSidebar extends NavigationMixin(LightningElemen
                 this.userNavigationConfig = userConfig;
                 this.isPunchoutUser = this.userNavigationConfig['isPunchoutUser'];
                 this.renderSideBar = true; // RWPS-4196
+                console.log('inside user config', this.userNavigationConfig);
             }
             //VRa - Punchout changes 1.5 Feb 8 : Phase 2.0 TODO. These configurations needs to be pulled from metadata after login architecture rework
             else { 
-
+                console.log('Outside user config', userResult, userConfig);
                 // RWPS-4196 - If userConfig is empty check and see if user is punchout user or web user from the server call response.
                 this.setAttributesForUserConfig(userResult, userConfig);
                 this.renderSideBar = true; // RWPS-4196
@@ -369,6 +376,7 @@ export default class Ecom_accountSidebar extends NavigationMixin(LightningElemen
                 viewFavourites: true,
                 viewFrequentlyPurchased: true,
                 viewQuickOrder: true,
+                viewMyQuotes: true,
                 viewLogout: false,
                 storeForwardingUrl: '/createsession',
                 isPunchoutUser: true
@@ -385,6 +393,7 @@ export default class Ecom_accountSidebar extends NavigationMixin(LightningElemen
                 viewFavourites: true,
                 viewFrequentlyPurchased: false,
                 viewQuickOrder: true,
+                viewMyQuotes: true,
                 viewLogout: true,
                 storeForwardingUrl: ''
             }
@@ -545,6 +554,20 @@ export default class Ecom_accountSidebar extends NavigationMixin(LightningElemen
             },
         });
     }
+
+    handleMyQuotesClick(){
+        if(this.isRedirectUrl){
+            this.restrictUserToNavigate();
+            return;
+        }
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/my-quotes'
+            },
+        });
+    }
+
     
     renderedCallback(){
         if (this.isRenderCallbackExecuted){
