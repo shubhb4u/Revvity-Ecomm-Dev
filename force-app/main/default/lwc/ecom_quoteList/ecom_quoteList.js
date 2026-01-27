@@ -1,6 +1,11 @@
 import { LightningElement, track, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getQuoteData from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
+import SORT_BY_OLDEST from '@salesforce/label/c.Sort_By_Oldest';
+import SORT_BY_NEWEST from '@salesforce/label/c.Sort_By_Newest';
+import SORT_BY_ITEMS from '@salesforce/label/c.Sort_By_Number_Of_Items';
+import SORT_BY_TOTAL from '@salesforce/label/c.Sort_By_Quote_Total';
+
 
 export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
 
@@ -32,7 +37,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         this.allWiredData = result;
         if (result.data) {
             this.quotes = result.data;
-            console.log('this.quotes from integration User', this.quotes);
             this.processQuotes();
             this.isLoading = false;
         } else if (result.error) {
@@ -47,13 +51,12 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
 
         this.allQuotes = (this.quotes || []).map(q => {
             const exp = q.ValidUntil ? new Date(q.ValidUntil) : null;
-            const isExpired = exp ? this.startOfDay(exp) < today : false; // No expiration = Active
+            const isExpired = exp ? this.startOfDay(exp) < today : false; 
             const displayStatus = isExpired ? 'Expired' : 'Active';
 
             return {
                 ...q,
                 _status: displayStatus,
-                // Classes driven by the computed display status
                 statusClass: this.getStatusClass(displayStatus),
                 expiresOnClass: this.getExpiresOnClass(displayStatus),
                 expiresOn: this.formatDateForUI(q.ValidUntil),
@@ -64,7 +67,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
             };
         });
 
-        // Segment just once, based on the computed display status
         this.activeQuotes = this.allQuotes.filter(q => q._status === 'Active');
         this.expiredQuotes = this.allQuotes.filter(q => q._status === 'Expired');
 
@@ -147,13 +149,13 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
     get expiredButtonClass() {
         return this.isExpiredSelected ? 'seg-btn is-active' : 'seg-btn is-inactive';
     }
-
+    
     get sortOption() {
         return [
-            { label: 'Sort by: Oldest', value: 'oldest' },
-            { label: 'Sort by: Newest', value: 'newest' },
-            { label: 'Sort by: Number of Items', value: 'items' },
-            { label: 'Sort by: Quote Total', value: 'totalAmount' }
+            { label: SORT_BY_OLDEST, value: 'oldest' },
+            { label: SORT_BY_NEWEST, value: 'newest' },
+            { label: SORT_BY_ITEMS, value: 'items' },
+            { label: SORT_BY_TOTAL, value: 'totalAmount' }
         ];
     }
 
@@ -250,7 +252,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         });
     }
 
-    //sahithi changes
     @track showSearchModal = false;
 
     handleOpenSearchModal() {

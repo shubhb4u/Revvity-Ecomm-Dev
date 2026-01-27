@@ -1,4 +1,36 @@
-﻿import { LightningElement, track, api, wire } from 'lwc';
+﻿/**************************************************************
+* 1. Jira Ticket(s) that relates to this class :
+*    - RWPS-5262
+*    - RWPS-5263
+ 
+* 2. Description :
+*    LWC component used to display CPQ Quote details including:
+*       - Fetching Quote details with line items
+*       - Checking PDF generation status for the Quote
+*       - Downloading the Quote PDF document
+*       - Rendering quote totals, expiration status, and UI formatting
+*
+* 3. Apex Classes referenced :
+*    - ECOM_CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines
+*    - ECOM_CPQQuoteDocumentsController.getCPQQuotesDocumentApi
+*    - ECOM_CPQQuoteDocumentsController.getCPQQuoteStatusApi
+*    - ECOM_CPQQuoteDocumentsController.getbaseUrl
+*
+* 4. Callouts to additional Components (including their methods):
+*    - NavigationMixin (for navigation)
+*    - ShowToastEvent (for toast notifications)
+*
+* 5. Dependant Component(s):
+*    - LWC HTML & CSS templates for layout and styling
+*
+* 6. Test Coverage (LWC Jest Test File):
+*    - <Add LWC Test File Here>
+*
+* 8. Author Name(s):
+*    - Devanshi Agrawal
+**************************************************************/
+
+import { LightningElement, track, api, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getQuoteById from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
 import getCPQQuotesDocumentApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getCPQQuotesDocumentApi';
@@ -13,14 +45,9 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
   currencyCode = 'USD';
   expirationDate;
   baseurl = '';
-  // @api quoteId;
   res;
   isActive = true;
   isLoading = false;
-  subtotal = 0.0;
-  freight = 0.0;
-  tax = 0.0;
-  savings = 0.0;
   error = null;
   quoteId;
   quotes;
@@ -39,46 +66,14 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
   wiredata(result) {
     if (result.data) {
       this.baseurl = result.data;
-      console.log('Base URL:', this.baseurl);
     } else if (result.error) {
       console.error('Base URL Error:', result.error);
     }
   }
 
-  /* ========= Shipping / Billing mock values (unchanged) ========= */
-  @track shipCompany = 'Lorem company name';
-  @track shipStreet = '1900 Avenue of the Stars';
-  @track shipCity = 'Lorem ipsum';
-  @track shipState = 'Lorem 90067';
-  @track shipPostal = '';
-  @track shipCountry = 'Italy';
-
-  @track recipient = 'Jane Doe';
-  @track deliveryInstructions = 'Place on first floor lobby with receptionist. She must sign';
-  @track accountNumber = '12345678';
-
-  @track billCompany = 'Lorem company name';
-  @track billStreet = '1900 Avenue of the Stars';
-  @track billCity = 'Lorem ipsum';
-  @track billState = 'Lorem 90067';
-  @track billPostal = '';
-  @track billCountry = 'Italy';
-
-  @track invoiceEmail = 'lorem ipsum';
-  @track vatNumberMasked = 'XXXXXXXXXX';
-  @track projectCode = '0000000000';
-
-  @track invoiceCompany = 'Lorem company name';
-  @track invoiceStreet = '1900 Avenue of the Stars';
-  @track invoiceCity = 'Lorem ipsum';
-  @track invoiceState = 'Lorem 90067';
-  @track invoicePostal = '';
-  @track invoiceCountry = 'Italy';
-
 
   connectedCallback() {
 
-    console.log('connectedCallback');
     this.loadStatus();
     const params = new URLSearchParams(window.location.search);
     this.quoteId = params.get('id') || params.get('c__id') || params.get('recordId');
@@ -86,11 +81,10 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
   }
 
   async handleDownload() {
-    this.loading = true;
+    this.isLoading = true;
     try {
       const dto = await getCPQQuotesDocumentApi({ quoteId: this.quoteId });
       if (dto.message == 'Success') {
-        console.log('Download URL:', this.baseurl + dto.downloadUrl);
         window.location.href = `${this.baseurl}${dto.downloadUrl}`;
       } else {
         this.toast('Download failed', dto?.message || 'Unable to get download URL', 'error');
@@ -99,7 +93,7 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
       const msg = e?.body?.message || e?.message || 'Unexpected error';
       this.toast('Error', msg, 'error');
     } finally {
-      this.loading = false;
+      this.isLoading = false;
     }
   }
 
@@ -111,7 +105,6 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
     try {
       const url = new URL(window.location.href);
       this.quoteId = url.searchParams.get('id');
-      console.log('quote id from url', this.quoteId);
       const dto = await getCPQQuoteStatusApi({ quoteId: this.quoteId });
       if (dto.success) {
         this.isActive = dto.success;
@@ -123,8 +116,6 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
       alert('Error fetching status of quote pdf.');
     }
   }
-
-
 
   async loadQuoteDetails() {
     this.isLoading = true;
@@ -146,25 +137,20 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
   processQuotes() {
 
     const today = this.startOfDay(new Date());
-    // Extract single quote from array (API returns single matching quote)
     const quote = (this.quotes && this.quotes.length > 0) ? this.quotes[0] : null;
     if (!quote) return;
 
     console.log('Processing quote:', quote);
 
-    // Parse expiration as date-only to avoid timezone issues
     const exp = quote.ValidUntil ? new Date(quote.ValidUntil) : null;
-    const isExpired = exp ? this.startOfDay(exp) < today : false; // No expiration = Active
+    const isExpired = exp ? this.startOfDay(exp) < today : false; 
     const displayStatus = isExpired ? 'Expired' : 'Active';
-
-    // Set individual properties for template binding
     this.quoteNumber = quote.Name || '';
     this.status = displayStatus;
     this.expirationDate = quote.ValidUntil || '';
 
     console.log('Display status:', displayStatus, 'Expires on:', quote.ValidUntil);
 
-    // Store processed quote with computed properties
     this.currentQuote = {
       ...quote,
       _status: displayStatus,
@@ -173,12 +159,6 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
       expiresOn: this.formatDateForUI(quote.ValidUntil),
     };
 
-    console.log('Current quote updated:', this.currentQuote);
-
-    // Calculate subtotal from line items
-    this.subtotal = (quote.Lines || []).reduce((sum, line) => {
-      return sum + (line.LineTotal || 0);
-    }, 0);
   }
 
   startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }

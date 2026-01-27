@@ -14,7 +14,7 @@
     <div class="page">
 
         <!-- Top nav / back -->
-        <div class="ecomm-link slds-p-vertical_medium slds-border_bottom">
+        <div class="ecomm-link slds-p-vertical_large slds-border_bottom">
             <div class="slds-grid slds-grid_vertical-align-center">
                 <div class="slds-col" onclick={handleBackClick}>
                     <lightning-button-icon icon-name="utility:chevronleft" variant="bare" class="back-icon"
@@ -39,7 +39,7 @@
                 </template>
             </div>
 
-            <div class="slds-card__body slds-card__body_inner slds-m-top_medium">
+            <div class="slds-card__body slds-card__body_inner slds-m-top_large">
               <div class="ecomm-card-body-grid">
 
                 <!-- Valid until -->
@@ -78,21 +78,8 @@
                     <div class="info-block">
                         <div class="info-title">Shipping address</div>
                         <div class="info-text">
-                            {shipCompany}<br />
-                            {shipStreet}<br />
-                            {shipCity}, {shipState} {shipPostal}<br />
-                            {shipCountry}
-                            <!-- {currentQuote.SoldToAddress} -->
+                            {currentQuote.SoldToAddress}
                         </div>
-
-                        <div class="info-title slds-m-top_medium">Attention / recipient</div>
-                        <div class="info-text">{recipient}</div>
-
-                        <div class="info-title slds-m-top_medium">Delivery instructions</div>
-                        <div class="info-text">{deliveryInstructions}</div>
-
-                        <div class="info-title slds-m-top_medium">Active account</div>
-                        <div class="info-text">Account Number: {accountNumber}</div>
                     </div>
                 </div>
 
@@ -101,33 +88,7 @@
                     <div class="info-block">
                         <div class="info-title">Billing address</div>
                         <div class="info-text">
-                            {billCompany}<br />
-                            {billStreet}<br />
-                            {billCity}, {billState} {billPostal}<br />
-                            {billCountry}
-                            <!-- {currentQuote.PayerAddress} -->
-                        </div>
-
-                        <div class="info-title slds-m-top_medium">Email to invoice</div>
-                        <div class="info-text">{invoiceEmail}</div>
-
-                        <div class="info-title slds-m-top_medium">VAT</div>
-                        <div class="info-text">{vatNumberMasked}</div>
-
-                        <div class="info-title slds-m-top_medium">Codice commessa</div>
-                        <div class="info-text">{projectCode}</div>
-                    </div>
-                </div>
-
-                <!-- Invoice mailing address -->
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
-                    <div class="info-block">
-                        <div class="info-title">Invoice mailing address</div>
-                        <div class="info-text">
-                            {invoiceCompany}<br />
-                            {invoiceStreet}<br />
-                            {invoiceCity}, {invoiceState} {invoicePostal}<br />
-                            {invoiceCountry}
+                            {currentQuote.PayerAddress}
                         </div>
                     </div>
                 </div>
@@ -179,20 +140,21 @@
                     </div>
 
                     <div class="cell price list-price">
-                        <lightning-formatted-number value={line.ListPrice} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={line.ListPrice}></lightning-formatted-number>
                     </div>
 
                     <div class="cell price net-price">
-                        <lightning-formatted-number value={line.UnitNetPrice} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={line.UnitNetPrice}>
+                        </lightning-formatted-number>
                     </div>
 
                     <div class="cell qty qty-cell">{line.Quantity}</div>
 
                     <div class="cell total total-cell">
-                        <lightning-formatted-number value={line.LineTotal} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={line.LineTotal}></lightning-formatted-number>
                     </div>
                 </div>
             </template>
@@ -207,37 +169,33 @@
                 <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
                     <div class="totals-label">Subtotal</div>
                     <div class="totals-value">
-                        <lightning-formatted-number value={subtotal} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.SubTotal}></lightning-formatted-number>
                     </div>
                 </div>
 
                 <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
                     <div class="totals-label">Freight</div>
                     <div class="totals-value">
-                        <!-- <lightning-formatted-number value={currentQuote.TotalFreight} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number> -->
-                        <lightning-formatted-number value={freight} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.TotalFreight}></lightning-formatted-number>
                     </div>
                 </div>
 
                 <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
                     <div class="totals-label">Tax</div>
                     <div class="totals-value">
-                        <!-- <lightning-formatted-number value={currentQuote.TotalTax} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number> -->
-                        <lightning-formatted-number value={tax} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.TotalTax}></lightning-formatted-number>
                     </div>
                 </div>
 
                 <div
                     class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread totals-row--saving">
-                    <div class="totals-label totals-label--saving">Savings (10%)</div>
+                    <div class="totals-label totals-label--saving">Savings</div>
                     <div class="totals-value totals-value--saving">
-                        <lightning-formatted-number value={savings} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.TotalDiscount}></lightning-formatted-number>
                     </div>
                 </div>
 
@@ -247,8 +205,8 @@
                     class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread totals-row--grand">
                     <div class="totals-label totals-label--grand">Total:</div>
                     <div class="totals-value totals-value--grand">
-                        <lightning-formatted-number value={currentQuote.GrandTotal} format-style="currency"
-                            currency-code={currencyCode}></lightning-formatted-number>
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.GrandTotal}></lightning-formatted-number>
                     </div>
                 </div>
             </div>

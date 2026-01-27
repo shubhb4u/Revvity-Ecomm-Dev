@@ -1,6 +1,5 @@
 import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
-import LightningModal from 'lightning/modal';
 
 export default class Ecom_quoteSearch extends NavigationMixin(LightningElement) {
  
@@ -18,8 +17,7 @@ export default class Ecom_quoteSearch extends NavigationMixin(LightningElement) 
     }
  
     connectedCallback() {
-        console.log('[ecom_quoteSearch] Component loaded');
-        console.log('[ecom_quoteSearch] Received quotes from parent:', this.allQuotes?.length || 0);
+        
         if (this.allQuotes?.length > 0) {
             console.log('[ecom_quoteSearch] First quote example:', {
                 id: this.allQuotes[0].Id,
@@ -30,11 +28,9 @@ export default class Ecom_quoteSearch extends NavigationMixin(LightningElement) 
 
     handleInputChange(event) {
         this.searchTerm = event.target.value.trim();
-        console.log('[ecom_quoteSearch] User typed:', this.searchTerm);
 
         if (!this.searchTerm) {
             this.filteredQuotes = [];
-            console.log('[ecom_quoteSearch] Cleared results');
             return;
         }
 
@@ -46,18 +42,13 @@ export default class Ecom_quoteSearch extends NavigationMixin(LightningElement) 
                 return matches;
             })
             .slice(0, 12);
-
-        console.log('[ecom_quoteSearch] Found matches:', this.filteredQuotes.length);
         if (this.filteredQuotes.length > 0) {
-            console.log('[ecom_quoteSearch] First match:', this.filteredQuotes[0].Name);
+            
         }
     }
  
     handleSelectQuote(event) {
         const quoteId = event.currentTarget.dataset.quoteId;
- 
-        console.log('[ecom_quoteSearch] Selected quote ID:', quoteId);                
-        console.log('[ecom_quoteSearch] Navigating to: /quote-detail?id=' + quoteId);
  
         this[NavigationMixin.Navigate]({
             type: 'standard__webPage',

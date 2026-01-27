@@ -24,7 +24,7 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
         Date twelveMonthsAgo = today.addMonths(-12);
 
         List<SBQQ__Quote__c> quotes = [
-            SELECT Id, Name, SBQQ__ExpirationDate__c, SBQQ__Primary__c, SBQQ__NetAmount__c, SBQQ__LineItemCount__c, SBQQ__Status__c, CreatedDate, Total_Freight__c, Total_Tax__c, fxGrand_Total__c, SBQQ__Opportunity2__r.Sold_To_ERP_Address__r.fxAddressFull__c, SBQQ__Opportunity2__r.Payer_ERP_Address__r.fxAddressFull__c
+            SELECT Id, Name, SBQQ__ExpirationDate__c, SBQQ__Primary__c, SBQQ__NetAmount__c, SBQQ__LineItemCount__c, SBQQ__Status__c, CreatedDate, fxFreightDisplayedAmount__c, TotalTax__c, fxGrand_Total__c, Total_Discount__c, Country_List_Price_Total__c, SBQQ__Opportunity2__r.Sold_To_ERP_Address__r.fxAddressFull__c, SBQQ__Opportunity2__r.Payer_ERP_Address__r.fxAddressFull__c
             FROM SBQQ__Quote__c
             WHERE SBQQ__PrimaryContact__c = :contactId 
             AND SBQQ__PrimaryContact__r.Email != null
@@ -107,8 +107,10 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
         public Decimal NetAmount;
         public Integer Items;
         public DateTime CreatedDate;
+        public Decimal SubTotal;
         public Decimal TotalFreight;
         public Decimal TotalTax;
+        public Decimal TotalDiscount;
         public Decimal GrandTotal;
         public String SoldToAddress;
         public String PayerAddress;
@@ -127,8 +129,10 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
             NetAmount  = q.SBQQ__NetAmount__c;
             Items      = (q.SBQQ__LineItemCount__c == null) ? null : 
                             Integer.valueOf(q.SBQQ__LineItemCount__c);
-            TotalFreight = q.Total_Freight__c;
-            TotalTax = q.Total_Tax__c;
+            SubTotal = q.Country_List_Price_Total__c != null ? q.Country_List_Price_Total__c : 0;
+            TotalFreight = q.fxFreightDisplayedAmount__c;
+            TotalTax = q.TotalTax__c;
+            TotalDiscount = q.Total_Discount__c;
             GrandTotal = q.fxGrand_Total__c;
             SoldToAddress = q.SBQQ__Opportunity2__r.Sold_To_ERP_Address__r.fxAddressFull__c;
             PayerAddress = q.SBQQ__Opportunity2__r.Payer_ERP_Address__r.fxAddressFull__c;
@@ -158,8 +162,8 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
             Description = l.SBQQ__Product__r != null ? l.SBQQ__Product__r.Description : null;
             Quantity    = l.SBQQ__Quantity__c;
             ListPrice   = l.SBQQ__ListPrice__c;
-            UnitNetPrice    = l.Net_Price__c != null ? l.Net_Price__c : l.SBQQ__NetPrice__c;
-            LineTotal    = l.SBQQ__NetTotal__c != null ? l.SBQQ__NetTotal__c : (l.Net_Price__c != null && l.SBQQ__Quantity__c != null ? l.Net_Price__c * Quantity : null);
+            UnitNetPrice = l.Net_Price__c != null ? l.Net_Price__c : l.SBQQ__NetPrice__c;
+            LineTotal    = l.SBQQ__NetTotal__c;
             IsOptional  = l.SBQQ__Optional__c;
             Discount    = l.SBQQ__Discount__c;
         }
