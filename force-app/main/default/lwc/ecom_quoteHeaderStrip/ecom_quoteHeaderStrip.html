@@ -1,0 +1,285 @@
+<template>
+  <!-- Top utility bar: back link -->
+  <nav class="topbar" aria-label="breadcrumb">
+    <a class="back-link" href={backHref} onclick={handleBack}>
+      <span class="icon" aria-hidden="true">←</span>
+      <span>Back to my quotes</span>
+    </a>
+  </nav>
+
+  <!-- Header strip: title + action -->
+  <section class="header-strip" role="region" aria-label="Quote summary">
+    <div class="left">
+      <h1 class="title">Quote number: {quoteNumber}</h1>
+
+      <!-- Four summary cells -->
+      <div class="meta-row" role="list">
+        <div class="meta-item" role="listitem">
+          <div class="meta-label">Valid until:</div>
+          <div class="meta-value">{validUntil}</div>
+        </div>
+
+        <div class="meta-item" role="listitem">
+          <div class="meta-label">Total:</div>
+          <div class="meta-value">{total}</div>
+        </div>
+
+        <div class="meta-item" role="listitem">
+          <div class="meta-label">Items:</div>
+          <div class="meta-value">{itemsCount}</div>
+        </div>
+
+        <div class="meta-item" role="listitem">
+          <div class="meta-label">Status:</div>
+          <div class="meta-value status-active">{statusLabel}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action button on right -->
+    <div class="right">
+      <button class="pill-button" title="Download the quote as PDF" onclick={handleDownload}>
+        Download Quote
+      </button>
+      
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- Shipping & billing information -->
+  <section class="addresses" aria-labelledby="sbi-heading">
+    <h2 id="sbi-heading" class="section-title">Shipping &amp; billing information</h2>
+
+    <div class="address-grid">
+      <!-- Shipping address -->
+      <article class="address-card" aria-label="Shipping address">
+        <h3 class="card-title">Shipping address</h3>
+        <p>{shipCompanyName}</p>
+        <p>{shipStreet}</p>
+        <p>{shipCityStatePostal}</p>
+        <p>{shipCountry}</p>
+
+        <div class="kv">
+          <div class="kv-row">
+            <div class="kv-label">Attention / recipient</div>
+            <div class="kv-value">{recipient}</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-label">Delivery instructions</div>
+            <div class="kv-value">{deliveryInstructions}</div>
+          </div>
+        </div>
+
+        <div class="kv">
+          <div class="kv-row">
+            <div class="kv-label">Active account</div>
+            <div class="kv-value">Account Number: {accountNumber}</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Billing address -->
+      <article class="address-card" aria-label="Billing address">
+        <h3 class="card-title">Billing address</h3>
+        <p>{billCompanyName}</p>
+        <p>{billStreet}</p>
+        <p>{billCityStatePostal}</p>
+        <p>{billCountry}</p>
+
+        <div class="kv">
+          <div class="kv-row">
+            <div class="kv-label">Email to invoice</div>
+            <div class="kv-value">{invoiceEmail}</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-label">VAT</div>
+            <div class="kv-value">{vatNumber}</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-label">Codice commessa</div>
+            <div class="kv-value">{codiceCommessa}</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Invoice mailing address -->
+      <article class="address-card" aria-label="Invoice mailing address">
+        <h3 class="card-title">Invoice mailing address</h3>
+        <p>{invoiceMailCompanyName}</p>
+        <p>{invoiceMailStreet}</p>
+        <p>{invoiceMailCityStatePostal}</p>
+        <p>{invoiceMailCountry}</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ======================= SECOND HALF: ITEMS ======================= -->
+
+  <!-- ITEMS HEADER + ACTIONS -->
+  <section class="items-section" aria-labelledby="items-heading">
+    <div class="items-header">
+      <h2 id="items-heading" class="section-title">Items</h2>
+
+      <div class="header-actions">
+        <button class="ghost-button" onclick={handleRequestModification}>Request modification</button>
+        <button class="brand-button" onclick={handleAddQuoteToCart}>Add quote to cart</button>
+      </div>
+    </div>
+
+    <!-- LINE ITEMS TABLE -->
+    <div class="table-wrap">
+      <table class="lines-table" role="table" aria-label="Quote line items">
+        <thead>
+          <tr role="row">
+            <th scope="col" class="col-name"># Name</th>
+            <th scope="col" class="col-money">Unit list price</th>
+            <th scope="col" class="col-money">Unit net price</th>
+            <th scope="col" class="col-qty">Quantity</th>
+            <th scope="col" class="col-money col-right">Line total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Repeat for each primary line -->
+          <template if:true={lines}>
+            <template for:each={lines} for:item="l">
+              <tr key={l.Id} role="row">
+                <!-- NAME + meta -->
+                <td class="col-name">
+                  <div class="line-title">{l.Index}. {l.ProductName}</div>
+                  <dl class="line-meta">
+                    <div class="meta-row">
+                      <dt>Part #:</dt><dd>{l.PartNumber}</dd>
+                    </div>
+                    <div class="meta-row">
+                      <dt>Product line:</dt><dd>{l.ProductLine}</dd>
+                    </div>
+                    <div class="meta-row">
+                      <dt>Discounts:</dt><dd>{l.DiscountSummary}</dd>
+                    </div>
+                  </dl>
+                </td>
+
+                <!-- Unit list price -->
+                <td class="col-money">{l.UnitListPriceFormatted}</td>
+
+                <!-- Unit net price -->
+                <td class="col-money">{l.UnitNetPriceFormatted}</td>
+
+                <!-- Quantity -->
+                <td class="col-qty">{l.Quantity}</td>
+
+                <!-- Line total (right aligned) -->
+                <td class="col-money col-right">{l.LineTotalFormatted}</td>
+              </tr>
+              <!-- Optional divider between lines -->
+              <!-- <tr key={l.Id + '-divider'}><td colspan="5" class="row-divider"></td></tr> -->
+            </template>
+          </template>
+
+          <!-- Empty state -->
+          <template if:false={lines}>
+            <tr>
+              <td colspan="5" class="empty-state">
+                No items have been added to this quote.
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TOTALS (PRIMARY) -->
+    <div class="totals-card" aria-labelledby="totals-heading">
+      <h3 id="totals-heading" class="card-title">Total</h3>
+      <div class="totals-grid">
+        <div class="label">Subtotal</div>
+        <div class="value">{subtotal}</div>
+
+        <div class="label">Freight</div>
+        <div class="value">{freight}</div>
+
+        <div class="label">Savings ({savingsPercent})</div>
+        <div class="value positive">{savingsAmount}</div>
+
+        <div class="label total-label">Total</div>
+        <div class="value total-value">{grandTotal}</div>
+      </div>
+    </div>
+
+    <!-- OPTIONAL ITEMS -->
+    <section class="optional-items" aria-labelledby="opt-items-heading">
+      <h3 id="opt-items-heading" class="section-title">Optional Items</h3>
+      <p class="muted">Add available options if required.</p>
+
+      <div class="table-wrap">
+        <table class="lines-table" role="table" aria-label="Optional quote line items">
+          <thead>
+            <tr>
+              <th scope="col" class="col-name"># Name</th>
+              <th scope="col" class="col-money">Unit list price</th>
+              <th scope="col" class="col-money">Unit net price</th>
+              <th scope="col" class="col-qty">Quantity</th>
+              <th scope="col" class="col-money col-right">Line total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template if:true={optionalLines}>
+              <template for:each={optionalLines} for:item="ol">
+                <tr key={ol.Id}>
+                  <td class="col-name">
+                    <div class="line-title">{ol.Index}. {ol.ProductName}</div>
+                    <dl class="line-meta">
+                      <div class="meta-row">
+                        <dt>Part #:</dt><dd>{ol.PartNumber}</dd>
+                      </div>
+                      <div class="meta-row">
+                        <dt>Product line:</dt><dd>{ol.ProductLine}</dd>
+                      </div>
+                      <div class="meta-row">
+                        <dt>Discounts:</dt><dd>{ol.DiscountSummary}</dd>
+                      </div>
+                    </dl>
+                  </td>
+                  <td class="col-money">{ol.UnitListPriceFormatted}</td>
+                  <td class="col-money">{ol.UnitNetPriceFormatted}</td>
+                  <td class="col-qty">{ol.Quantity}</td>
+                  <td class="col-money col-right">{ol.LineTotalFormatted}</td>
+                </tr>
+                <!-- Optional divider -->
+                <!-- <tr key={ol.Id + '-divider'}><td colspan="5" class="row-divider"></td></tr> -->
+              </template>
+            </template>
+
+            <template if:false={optionalLines}>
+              <tr>
+                <td colspan="5" class="empty-state">
+                  No optional items are available for this quote.
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- FOOTNOTE / DISCLAIMER -->
+      <div class="disclaimer">
+        <p class="disclaimer-title">Notes &amp; disclaimers</p>
+        <p class="disclaimer-text">
+          Prices shown are subject to recalculation at final checkout. Freight and taxes are shown when they apply.
+          Consequently, these amounts can change based on destination and shipping method. Optional items are not
+          included in the quoted total unless explicitly added.
+        </p>
+      </div>
+
+      <!-- OPTIONAL TOTALS -->
+      <div class="totals-card" aria-labelledby="opt-totals-heading">
+        <h3 id="opt-totals-heading" class="card-title">Total</h3>
+        <div class="totals-grid">
+          <div class="label total-label">Total</div>
+          <div class="value total-value">{optionalGrandTotal}</div>
+        </div>
+      </div>
+    </section>
+  </section>
+</template>

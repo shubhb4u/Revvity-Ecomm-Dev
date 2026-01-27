@@ -1,0 +1,218 @@
+<template>
+
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+      <div class="slds-spinner_container">
+        <div class="slds-spinner slds-spinner_medium" aria-hidden="false" role="status">
+          <div class="slds-spinner__dot-a"></div>
+          <div class="slds-spinner__dot-b"></div>
+        </div>
+      </div>
+    </template>
+
+    <template if:false={isLoading}>
+    <div class="page">
+
+        <!-- Top nav / back -->
+        <div class="ecomm-link slds-p-vertical_large slds-border_bottom">
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <div class="slds-col" onclick={handleBackClick}>
+                    <lightning-button-icon icon-name="utility:chevronleft" variant="bare" class="back-icon"
+                        alternative-text="Back">
+                    </lightning-button-icon>
+                    <a href="javascript:void(0)"> Back to my quotes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container slds-border_bottom">
+            <!-- Header row: title left, button right -->
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center header-row">
+                <div class="slds-col slds-p-right_small">
+                    <h1 class="quote-title">Quote number: {quoteNumber}</h1>
+                </div>
+                <template if:true={isActive}>
+                <div class="slds-col slds-text-align_right">
+                    <button class="btn btn-pill btn-outline" title="Download the quote as PDF" onclick={handleDownload}>
+                        Download Quote</button>
+                </div>
+                </template>
+            </div>
+
+            <div class="slds-card__body slds-card__body_inner slds-m-top_large">
+              <div class="ecomm-card-body-grid">
+
+                <!-- Valid until -->
+                <div class="ecomm-field-col">
+                  <div class="ecomm-label">Valid until</div>
+                  <div class={currentQuote.expiresOnClass}>{currentQuote.expiresOn}</div>
+                </div>
+
+                <!-- Total -->
+                <div class="ecomm-field-col">
+                  <div class="ecomm-label">Total</div>
+                  <div class="ecomm-value">${currentQuote.NetAmount}</div>
+                </div>
+
+                <!-- Items -->
+                <div class="ecomm-field-col">
+                  <div class="ecomm-label">Items</div>
+                  <div class="ecomm-value">{currentQuote.Items}</div>
+                </div>
+
+                <!-- Status -->
+                <div class="ecomm-field-col">
+                    <div class="ecomm-label">Status</div>
+                    <div class={currentQuote.statusClass}>{currentQuote._status}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section title -->
+            <h2 class="section-title slds-m-top_xx-large">Shipping &amp; billing information</h2>
+
+            <!-- Addresses: 3 equal columns, responsive -->
+            <div class="slds-grid slds-wrap slds-m-top_medium info-columns">
+                <!-- Shipping address -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <div class="info-block">
+                        <div class="info-title">Shipping address</div>
+                        <div class="info-text">
+                            {currentQuote.SoldToAddress}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing address -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <div class="info-block">
+                        <div class="info-title">Billing address</div>
+                        <div class="info-text">
+                            {currentQuote.PayerAddress}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Items header & actions -->
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-top_xx-large slds-m-bottom_xx-large items-header">
+            <div class="slds-col">
+                <h2 class="section-title">Items</h2>
+            </div>
+            <div class="slds-col slds-text-align_right items-actions">
+                <button class="btn btn-pill btn-outline slds-m-right_small">Request modification</button>
+                <button class="btn btn-pill btn-solid">Add quote to cart</button>
+            </div>
+        </div>
+
+        <!-- Items table -->
+        <div class="items-table slds-m-top_small">
+            <!-- Header row (single row with column titles) -->
+            <div class="row header">
+                <div class="cell index">#</div>
+                <div class="cell name">Name</div>
+                <div class="cell price">Unit list price</div>
+                <div class="cell price">Unit net price</div>
+                <div class="cell qty">Quantity</div>
+                <div class="cell total">Line total</div>
+            </div>
+
+
+            <!-- Lines -->
+            <template for:each={currentQuote.Lines} for:item="line" for:index="i">
+                <!-- Two-row layout -->
+                <div key={line.Id} class="row row-2line">
+                    <!-- Row 1: index + name (name spans across) -->
+                    <div class="cell index index-top">{i}.</div>
+                    <div class="cell name name-top">
+                        <div class="line-name">{line.ProductName}</div>
+                    </div>
+
+                    <!-- Row 2: index spacer + meta + prices + qty + total -->
+                    <div class="cell index index-bottom"></div>
+
+                    <!-- NEW: meta cell (holds Part# and Product description) -->
+                    <div class="cell name-meta">
+                        <div class="subtext">Part#: <span class="cellValue">{line.PartNumber}</span></div>
+                        <div class="subtext">Product description: {line.Description}</div>
+                    </div>
+
+                    <div class="cell price list-price">
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={line.ListPrice}></lightning-formatted-number>
+                    </div>
+
+                    <div class="cell price net-price">
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={line.UnitNetPrice}>
+                        </lightning-formatted-number>
+                    </div>
+
+                    <div class="cell qty qty-cell">{line.Quantity}</div>
+
+                    <div class="cell total total-cell">
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={line.LineTotal}></lightning-formatted-number>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+
+    <div class="slds-m-top_xx-large slds-m-bottom_x-large totals-section">
+        <h2 class="section-title slds-m-bottom_x-large">Total</h2>
+
+        <div class="totals-wrap">
+            <div class="totals-card slds-p-around_medium">
+                <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                    <div class="totals-label">Subtotal</div>
+                    <div class="totals-value">
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.SubTotal}></lightning-formatted-number>
+                    </div>
+                </div>
+
+                <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                    <div class="totals-label">Freight</div>
+                    <div class="totals-value">
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.TotalFreight}></lightning-formatted-number>
+                    </div>
+                </div>
+
+                <div class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                    <div class="totals-label">Tax</div>
+                    <div class="totals-value">
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.TotalTax}></lightning-formatted-number>
+                    </div>
+                </div>
+
+                <div
+                    class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread totals-row--saving">
+                    <div class="totals-label totals-label--saving">Savings</div>
+                    <div class="totals-value totals-value--saving">
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.TotalDiscount}></lightning-formatted-number>
+                    </div>
+                </div>
+
+                <hr class="totals-divider" />
+
+                <div
+                    class="totals-row slds-grid slds-grid_vertical-align-center slds-grid_align-spread totals-row--grand">
+                    <div class="totals-label totals-label--grand">Total:</div>
+                    <div class="totals-value totals-value--grand">
+                        <span class="currency-code">{currencyCode}&nbsp;</span>
+                        <lightning-formatted-number value={currentQuote.GrandTotal}></lightning-formatted-number>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </template>
+
+</template>
