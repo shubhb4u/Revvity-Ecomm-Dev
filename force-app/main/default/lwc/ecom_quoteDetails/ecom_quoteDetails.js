@@ -80,21 +80,34 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
     if (this.quoteId) this.loadQuoteDetails();
   }
 
-  async handleDownload() {
+  /* -- Change By Devanshi Agrawal, RWPS-5263 -- */
+  handleDownload() {
+  
     this.isLoading = true;
-    try {
-      const dto = await getCPQQuotesDocumentApi({ quoteId: this.quoteId });
-      if (dto.message == 'Success') {
-        window.location.href = `${this.baseurl}${dto.downloadUrl}`;
-      } else {
-        this.toast('Download failed', dto?.message || 'Unable to get download URL', 'error');
-      }
-    } catch (e) {
-      const msg = e?.body?.message || e?.message || 'Unexpected error';
-      this.toast('Error', msg, 'error');
-    } finally {
-      this.isLoading = false;
-    }
+
+    getCPQQuotesDocumentApi({ quoteId: this.quoteId })
+        .then(dto => {
+  
+            if (dto?.success === true) {
+                if (dto.publicUrl) {
+                    window.open(dto.publicUrl, '_blank');
+                } else {
+                    console.error('[Download] success=true but publicUrl is missing', dto);
+                }
+            } else {
+                console.error('[Download] success=false', dto);
+            }
+        })
+        .catch(error => {
+            console.error('[Download] Apex error:', error);
+        })
+        .finally(() => {
+            this.isLoading = false;
+        });
+  }
+  
+  toast(title, message, variant) {
+    this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
   }
 
   toast(title, message, variant) {

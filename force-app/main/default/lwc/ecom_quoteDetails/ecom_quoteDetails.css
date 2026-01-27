@@ -1,163 +1,118 @@
+
 :host {
-    --ecomm-text: #000000;
-    --ecomm-subtle: #6b7280;
-    --ecomm-border: #e5e7eb;
-    --ecomm-border-strong: #d1d5db;
-    --ecomm-bg: #ffffff;
+  --ecomm-text: #000000;
+  --ecomm-subtle: #6b7280;
+  --ecomm-border: #e5e7eb;
+  --ecomm-border-strong: #d1d5db;
+  --ecomm-bg: #ffffff;
+  --ecomm-danger: #DC0101;
+  --ecomm-success: #029333;
+  --Revvity-Orchid: #7F03B0;
+  --revvity-orchid: var(--Revvity-Orchid, #7F03B0);
+  --revvity-orchid-600: #6a0294;
+  --revvity-orchid-700: #59027b;
+  --ecomm-accent: var(--revvity-orchid);
+  --ecomm-accent-700: var(--revvity-orchid-600);
+  --ecomm-radius-card: 12px;
+  --ecomm-radius-pill: 40px;
+  --ecomm-shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --accent-color: var(--ecomm-accent);
+  --accent-solid: var(--ecomm-accent);
+  --success-color: var(--ecomm-success);
+  --text-muted: var(--ecomm-subtle);
+  --border-color: var(--ecomm-border);
 
-    --ecomm-danger: #DC0101;
-    --ecomm-success: #029333;
-
-    --Revvity-Orchid: #7F03B0;
-    --revvity-orchid: var(--Revvity-Orchid, #7F03B0);
-    --revvity-orchid-600: #6a0294;
-    --revvity-orchid-700: #59027b;
-
-    --ecomm-accent: var(--revvity-orchid);
-    --ecomm-accent-700: var(--revvity-orchid-600);
-
-    --ecomm-radius-card: 12px;
-    --ecomm-radius-pill: 40px;
-    --ecomm-shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.06);
-
-    --accent-color: var(--ecomm-accent);
-    --accent-solid: var(--ecomm-accent);
-    --success-color: var(--ecomm-success);
-    --text-muted: var(--ecomm-subtle);
-    --border-color: var(--ecomm-border);
+  /* ✅ single source of truth for the “slightly inside” alignment */
+  --items-col-inset: 8px;
 }
 
+.ecomm-status--active { color: var(--ecomm-success); }
+.ecomm-status--expired { color: var(--ecomm-danger); }
+.ecomm-status--neutral { color: var(--ecomm-subtle); }
 
-
-.ecomm-status--active {
-    color: var(--ecomm-success);
-}
-
-.ecomm-status--expired {
-    color: var(--ecomm-danger);
-}
-
-.ecomm-status--neutral {
-    color: var(--ecomm-subtle);
-}
-
-/* Base wrapper: apply brand font + color */
+/* Base wrapper */
 .page {
-    padding: 2rem;
-    margin: 2rem;
+  padding: 2rem;
+  margin: 2rem;
 }
-
 .container {
-    max-width: 100%;
+  max-width: 100%;
 }
-
 
 .ecomm-link {
   font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-               'Roboto', 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 500;         
+    'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 500;
   font-size: 18px;
-  line-height: 24px;      
-  letter-spacing: 0;       
+  line-height: 24px;
+  letter-spacing: 0;
   color: var(--ecomm-accent, #7F03B0);
   text-decoration: none;
 }
-
 .back-icon {
   position: relative;
-  top: -3px; 
+  top: -3px;
 }
-
-.header-row {
-    margin-top: 1rem;
-}
+.header-row { margin-top: 1rem; }
 
 .quote-title {
-    margin: 0;
-    font-size: 32px;
-    font-weight: 500;
-    line-height: 40px;
-    color: var(--ecomm-text);
-    font-family:  'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-               'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 40px;
+  color: var(--ecomm-text);
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Pill buttons (shared) */
+/* Pill buttons */
 .btn {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 24px;
-    border-radius: var(--ecomm-radius-pill);
-    padding: 12px 20px;
-    cursor: pointer;
-    font-family: inherit;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  border-radius: var(--ecomm-radius-pill);
+  padding: 12px 20px;
+  cursor: pointer;
+  font-family: inherit;
 }
-
-.btn-pill {
-    border-radius: var(--ecomm-radius-pill);
-}
+.btn-pill { border-radius: var(--ecomm-radius-pill); }
 
 .btn-outline {
-    border: 2px solid var(--ecomm-accent);
-    background: var(--ecomm-bg);
-    color: var(--ecomm-accent);
-    box-shadow: var(--ecomm-shadow-soft);
+  border: 2px solid var(--ecomm-accent);
+  background: var(--ecomm-bg);
+  color: var(--ecomm-accent);
+  box-shadow: var(--ecomm-shadow-soft);
 }
-
-.btn-outline:hover {
-    opacity: .95;
-}
-
+.btn-outline:hover { opacity: .95; }
 .btn-outline:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(127, 3, 176, 0.15);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(127, 3, 176, 0.15);
 }
 
 .btn-solid {
-    border: 2px solid var(--ecomm-accent);
-    background: var(--ecomm-accent);
-    color: var(--ecomm-bg);
-    box-shadow: var(--ecomm-shadow-soft);
+  border: 2px solid var(--ecomm-accent);
+  background: var(--ecomm-accent);
+  color: var(--ecomm-bg);
+  box-shadow: var(--ecomm-shadow-soft);
 }
-
-.btn-solid:hover {
-    opacity: .95;
-}
-
+.btn-solid:hover { opacity: .95; }
 .btn-solid:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(127, 3, 176, 0.15);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(127, 3, 176, 0.15);
 }
 
-/* ==========================================================================
-   Stats row (narrower than container + responsive)
-   ========================================================================== */
-.stats-wrap {
-    width: 78%;
-}
+/* Stats row */
+.stats-wrap { width: 78%; }
+@media (max-width: 1024px) { .stats-wrap { width: 88%; } }
+@media (max-width: 768px) { .stats-wrap { width: 100%; } }
 
-@media (max-width: 1024px) {
-    .stats-wrap {
-        width: 88%;
-    }
-}
-
-@media (max-width: 768px) {
-    .stats-wrap {
-        width: 100%;
-    }
-}
-
-.slds-card__body{
-    padding: 0;
-}
-
+.slds-card__body { padding: 0; }
 .slds-card__body_inner .slds-grid {
-  column-gap: 12px;  
+  column-gap: 12px;
   row-gap: 8px;
 }
 
-/* Card body grid container */
+/* Card body grid */
 .ecomm-card-body-grid {
   display: flex !important;
   flex-wrap: wrap;
@@ -165,43 +120,31 @@
   align-items: flex-start;
   max-width: 80%;
 }
-
-/* Field columns - default responsive */
 .ecomm-field-col {
   flex: 1 1 auto;
   min-width: 100px;
 }
-
-
-/* Labels & values (tuned to Figma) */
 .ecomm-label {
   font-size: 14px;
-  font-weight: 700;            
+  font-weight: 700;
   letter-spacing: 0.02em;
-  margin-bottom: 6px;          
+  margin-bottom: 6px;
 }
-
 .ecomm-value {
   font-size: 18px;
-  font-weight: 400;           
+  font-weight: 400;
   color: var(--ecomm-text);
 }
-
 .ecomm-value--danger,
 .ecomm-status--expired { color: var(--ecomm-danger); }
 .ecomm-status--active { color: var(--ecomm-success); }
 
-/* Mobile: 2 columns with proper wrapping */
 @media (max-width: 479px) {
-  .ecomm-card-body-grid {
-    gap: 12px 12px;
-  }
-  
+  .ecomm-card-body-grid { gap: 12px 12px; }
   .ecomm-field-col {
     flex: 0 1 calc(50% - 6px);
     min-width: 70px;
   }
-  
   .ecomm-details-link {
     flex: 1 1 100%;
     order: 10;
@@ -210,351 +153,432 @@
   }
 }
 
-
 .stat-label {
-    display: block;
-    color: var(--ecomm-text);
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 24px;
-    letter-spacing: 4%;
-    margin-bottom: .25rem;
-    font-family: inherit;
+  display: block;
+  color: var(--ecomm-text);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 4%;
+  margin-bottom: .25rem;
+  font-family: inherit;
 }
-
 .stat-value {
-    display: block;
-    color: var(--ecomm-text);
-    font-weight: 400;
-    font-size: 18px;
-    line-height: 24px;
-    letter-spacing: 0%;
+  display: block;
+  color: var(--ecomm-text);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0%;
 }
-
 .status-active {
-    color: var(--ecomm-success);
-    font-weight: 600;
+  color: var(--ecomm-success);
+  font-weight: 600;
 }
 
-/* ==========================================================================
-   Shipping & billing section
-   ========================================================================== */
+/* Shipping & billing section */
 .section-title {
-    font-size: 24px;
-    line-height: 32px;
-    font-weight: 500;
-    color: var(--ecomm-text);
-    font-family:  'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-               'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    margin-top: 3rem 0;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+  color: var(--ecomm-text);
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  margin-top: 3rem 0;
 }
-
-.info-columns .slds-col {
-    padding-right: 1rem;
-}
-
-.info-block {
-    margin-bottom: 1rem;
-}
+.info-columns .slds-col { padding-right: 1rem; }
+.info-block { margin-bottom: 1rem; }
 
 .info-title {
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 24px;
-    letter-spacing: 0.04;
-    color: var(--ecomm-text);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.04;
+  color: var(--ecomm-text);
 }
-
 .info-text {
-    color: var(--ecomm-text);
-    margin-top: .25rem;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 22px;
+  color: var(--ecomm-text);
+  margin-top: .25rem;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
 }
 
 @media (max-width: 480px) {
-    .container {
-        padding: 0 .75rem;
-    }
-
-    .info-columns .slds-col {
-        padding-right: 0;
-    }
+  .container { padding: 0 .75rem; }
+  .info-columns .slds-col { padding-right: 0; }
 }
 
-/* ==========================================================================
-   Items header & actions
-   ========================================================================== */
+/* Items header & actions */
 .items-header .items-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: .5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: .5rem;
+}
+@media (max-width: 768px) {
+  .items-header .items-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .items-header .items-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
 }
 
+/* =========================================================
+   ITEMS TABLE (zoom-safe + aligned)
+   ========================================================= */
+.items-table { margin-top: .5rem; }
 
-/* ==========================================================================
-   Items table (two-row grid per line to match Figma)
-   ========================================================================== */
-.items-table {
-    margin-top: .5rem;
-}
-
-/* Header row: single row grid (matches the second line columns of data rows) */
+/* Header row grid (zoom-safe) */
 .items-table .row.header {
-    display: grid;
-    grid-template-columns: 60px 1fr 160px 160px 120px 180px;
-    gap: 16px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--ecomm-border);
-    color: var(--ecomm-text);
+  display: grid;
+  grid-template-columns:
+    60px
+    minmax(200px, 1fr)
+    minmax(140px, 180px)
+    minmax(140px, 180px)
+    minmax(90px, 120px)
+    minmax(140px, 200px);
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ecomm-border);
+  color: var(--ecomm-text);
 }
 
-/* Header cells — ALL headers should be 18/24 */
+/* Header typography */
 .items-table .row.header .cell {
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 24px;
-    color: var(--ecomm-text);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--ecomm-text);
+  min-width: 0;
 }
 
-/* Optional: keep '#' slightly muted but same size */
-.items-table .row.header .cell.index {
-    color: var(--ecomm-subtle);
+/* ✅ Header wrapping (zoom-safe WITHOUT breaking letters) */
+.items-table .row.header .cell {
+  white-space: normal;
+  overflow-wrap: normal;  /* prevents N a m e */
+  word-break: normal;     /* prevents character-by-character wrap */
+  hyphens: auto;
 }
 
-/* Data row: two-line layout
-   Row 1: index-top | name-top (spans columns 2→6)
-   Row 2: index-bottom | meta | list-price | net-price | qty | total
-*/
+/* ✅ Keep 'Name' header readable at high zoom */
+.items-table .row.header .cell.name {
+  white-space: nowrap;
+}
+
+.items-table .row.header .cell.index { color: var(--ecomm-subtle); }
+
+/* Data row grid (zoom-safe) */
 .items-table .row.row-2line {
-    display: grid;
-    grid-template-columns: 60px 1fr 160px 160px 120px 180px;
-    grid-template-areas:
-        "index-top    name-top   name-top   name-top   name-top   name-top"
-        "index-bottom meta       list-price net-price  qty        total";
-    gap: 8px 16px;  /* row gap, col gap */
-    padding: 12px 0 16px;
-    border-bottom: 1px solid var(--ecomm-border);
-    color: var(--ecomm-text);
+  display: grid;
+  grid-template-columns:
+    60px
+    minmax(200px, 1fr)
+    minmax(140px, 180px)
+    minmax(140px, 180px)
+    minmax(90px, 120px)
+    minmax(140px, 200px);
+  grid-template-areas:
+    "index-top name-top name-top name-top name-top name-top"
+    "index-bottom meta list-price net-price qty total";
+  gap: 8px 16px;
+  padding: 12px 0 16px;
+  border-bottom: 1px solid var(--ecomm-border);
+  color: var(--ecomm-text);
 }
 
-/* Map areas to cells */
-.index-top      { grid-area: index-top; }
-.name-top       { grid-area: name-top; }
-.index-bottom   { grid-area: index-bottom; }
-.name-meta      { grid-area: meta; }      
-.list-price     { grid-area: list-price; }
-.net-price      { grid-area: net-price; }
-.qty-cell       { grid-area: qty; }
-.total-cell     { grid-area: total; }
+/* Areas */
+.index-top { grid-area: index-top; }
+.name-top { grid-area: name-top; }
+.index-bottom { grid-area: index-bottom; }
+.name-meta { grid-area: meta; }
+.list-price { grid-area: list-price; }
+.net-price { grid-area: net-price; }
+.qty-cell { grid-area: qty; }
+.total-cell { grid-area: total; }
 
-/* =========================
-   Typography (Figma mapping)
-   ========================= */
-
-/* Name cell/title — 18/24 */
+/* Typography */
 .items-table .row.row-2line .cell.name,
 .items-table .row.row-2line .line-name {
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 24px;
-    color: var(--ecomm-text);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--ecomm-text);
+}
+.subtext {
+  color: var(--ecomm-subtle);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: .15rem;
 }
 
-/* Subtext under name — 14/20, subtle grey */
-.subtext { 
-    color: var(--ecomm-subtle);
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px; 
-    margin-top: .15rem; 
-}
+/* prevent overflow */
+.items-table .row.row-2line .cell { min-width: 0; }
 
-
-.items-table .row.header .cell,
-.items-table .row.row-2line .cell,
-.opt-items-table .row.header .cell,
-.opt-items-table .row.row-2line .cell {
-  min-width: 0; /* prevents content from forcing overflow */
-}
-
-
-/* Numeric cells (prices, qty, total) — 14/20, weight 500
-   IMPORTANT: scope to body rows so header is not affected */
+/* numeric body typography */
 .items-table .row.row-2line .cell.price,
 .items-table .row.row-2line .cell.qty,
 .items-table .row.row-2line .cell.total,
 .items-table .row.row-2line .cellValue {
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
-    color: var(--ecomm-text);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ecomm-text);
 }
-
-/* Ensure lightning base component inherits the parent metrics */
 .items-table .row.row-2line .cell.price > lightning-formatted-number,
 .items-table .row.row-2line .cell.total > lightning-formatted-number {
-    font-size: inherit;
-    line-height: inherit;
-    font-weight: inherit;
-    color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  color: inherit;
 }
 
-/* Index cell — 14/20, slightly muted */
+/* index body */
 .items-table .row.row-2line .cell.index {
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ecomm-subtle);
+}
+
+/* ✅ Alignment rules
+   - Unit list price, Unit net price, Quantity => left aligned + inset
+   - Line total => right aligned + inset from right edge
+*/
+.items-table .row.header .cell.price,
+.items-table .row.header .cell.qty,
+.items-table .row.row-2line .cell.price,
+.items-table .row.row-2line .cell.qty {
+  text-align: left;
+  padding-left: var(--items-col-inset);
+  box-sizing: border-box;
+}
+.items-table .row.header .cell.total,
+.items-table .row.row-2line .cell.total,
+.items-table .row.row-2line .total-cell {
+  text-align: right;
+  padding-right: var(--items-col-inset);
+  padding-left: 0;
+  box-sizing: border-box;
+}
+
+/* small spacing between currency and amount */
+.items-table .currency-code { margin-right: 4px; }
+
+/* ✅ Keep amounts on one line (avoids weird wraps at high zoom) */
+.items-table .row.row-2line .cell.price,
+.items-table .row.row-2line .cell.total {
+  white-space: nowrap;
+}
+
+/* Zoom / mid-width safety: reduce spacing sooner */
+@media (max-width: 900px) {
+  .items-table .row.header,
+  .items-table .row.row-2line {
+    gap: 8px 12px;
+  }
+}
+
+/* ✅ High-zoom fallback: treat zoomed-in desktops like a narrow screen */
+@media (max-width: 640px) {
+  .items-table .row.header { display: none; }
+
+  .items-table .row.row-2line {
+    grid-template-columns: 36px 1fr;
+    grid-template-areas:
+      "index-top name-top"
+      "index-bottom meta"
+      "index-bottom list-price"
+      "index-bottom net-price"
+      "index-bottom qty"
+      "index-bottom total";
+    gap: 10px 12px;
+    padding: 14px 0 16px;
+  }
+
+  /* stacked view reads better left-aligned */
+  .items-table .row.row-2line .cell.price,
+  .items-table .row.row-2line .cell.qty,
+  .items-table .row.row-2line .cell.total {
+    text-align: left;
+    padding-left: 0;
+    padding-right: 0;
+    white-space: normal;
+  }
+
+  /* labels for stacked view */
+  .items-table .list-price::before { content: "Unit list price"; }
+  .items-table .net-price::before { content: "Unit net price"; }
+  .items-table .qty-cell::before { content: "Quantity"; }
+  .items-table .total-cell::before { content: "Line total"; }
+
+  .items-table .list-price::before,
+  .items-table .net-price::before,
+  .items-table .qty-cell::before,
+  .items-table .total-cell::before {
+    display: block;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
     color: var(--ecomm-subtle);
+    margin-bottom: 2px;
+  }
+
+  .items-table .total-cell { font-weight: 600; }
+  .items-table .cell.index { padding-top: 2px; }
 }
 
-/* Alignment */
-.items-table .cell.qty   { text-align: left; }
-.items-table .cell.price,
-.items-table .cell.total { text-align: right; }
-
-/* Medium screens: slightly tighter columns */
+/* Medium screens (zoom-safe) */
 @media (max-width: 1024px) {
-    .items-table .row.header,
-    .items-table .row.row-2line {
-        grid-template-columns: 50px 1fr 140px 140px 110px 160px;
-        gap: 8px 12px;
-    }
+  .items-table .row.header,
+  .items-table .row.row-2line {
+    grid-template-columns:
+      50px
+      minmax(200px, 1fr)
+      minmax(130px, 160px)
+      minmax(130px, 160px)
+      minmax(80px, 110px)
+      minmax(130px, 180px);
+    gap: 8px 12px;
+  }
 }
 
-/* Tablet: keep header visible; still two-row rows; compact columns */
+/* Tablet (zoom-safe) */
 @media (max-width: 768px) {
-    .items-table .row.header,
-    .items-table .row.row-2line {
-        grid-template-columns: 44px 1fr 120px 120px 90px 140px;
-        gap: 8px 12px;
-    }
+  .items-table .row.header,
+  .items-table .row.row-2line {
+    grid-template-columns:
+      44px
+      minmax(180px, 1fr)
+      minmax(120px, 150px)
+      minmax(120px, 150px)
+      minmax(70px, 100px)
+      minmax(120px, 160px);
+    gap: 8px 12px;
+  }
 }
 
-/* Mobile: hide header; keep meta + prices together on row 2; qty/total below */
+/* Mobile stacked layout */
 @media (max-width: 480px) {
-    .items-table .row.header { display: none; }
+  .items-table .row.header { display: none; }
 
-    .items-table .row.row-2line {
-        grid-template-columns: 40px 1fr; /* two columns */
-        grid-template-areas:
-            "index-top    name-top"
-            "index-bottom meta"
-            "index-bottom qty"
-            "index-bottom total";
-        gap: 6px 10px;
-    }
+  .items-table .row.row-2line {
+    grid-template-columns: 36px 1fr;
+    grid-template-areas:
+      "index-top name-top"
+      "index-bottom meta"
+      "index-bottom list-price"
+      "index-bottom net-price"
+      "index-bottom qty"
+      "index-bottom total";
+    gap: 10px 12px;
+    padding: 14px 0 16px;
+  }
 
-    /* Prices appear inline within the meta area (same line as Part#) */
-    .list-price,
-    .net-price {
-        display: inline-block;
-        grid-area: meta;
-        text-align: left;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        color: var(--ecomm-text); 
-        margin-right: 12px;
-    }
+  /* stacked view reads better left-aligned */
+  .items-table .row.row-2line .cell.price,
+  .items-table .row.row-2line .cell.qty,
+  .items-table .row.row-2line .cell.total {
+    text-align: left;
+    padding-left: 0;
+    padding-right: 0;
+    white-space: normal;
+  }
 
-    .qty-cell,
-    .total-cell {
-        text-align: left;
-        color: var(--ecomm-text);
-    }
+  /* labels for stacked view */
+  .items-table .list-price::before { content: "Unit list price"; }
+  .items-table .net-price::before { content: "Unit net price"; }
+  .items-table .qty-cell::before { content: "Quantity"; }
+  .items-table .total-cell::before { content: "Line total"; }
 
-    .total-cell { font-weight: 600; }
+  .items-table .list-price::before,
+  .items-table .net-price::before,
+  .items-table .qty-cell::before,
+  .items-table .total-cell::before {
+    display: block;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    color: var(--ecomm-subtle);
+    margin-bottom: 2px;
+  }
+
+  .items-table .total-cell { font-weight: 600; }
+  .items-table .cell.index { padding-top: 2px; }
 }
 
-
-/* ==========================================================================
-   Totals — Figma exact styles
-   ========================================================================== */
-
-/* Optional wrapper to match Figma width (and stay responsive) */
+/* =========================================================
+   TOTALS
+   ========================================================= */
 .totals-wrap {
-    width: 100%;         
-    margin-left: 0;
-    margin-right: 0;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
 @media (max-width: 920px) { .totals-wrap { width: 100%; } }
 
-/* Card panel: background, border, radius, padding, row gap, height */
 .totals-card {
-    background: #FBFBFB;                
-    border: 1px solid #E3E3E3;          
-    border-radius: 8px;                
-    padding: 24px 16px;               
-    display: grid;
-    row-gap: 24px;                    
-    box-sizing: border-box;
+  background: #FBFBFB;
+  border: 1px solid #E3E3E3;
+  border-radius: 8px;
+  padding: 24px 16px;
+  display: grid;
+  row-gap: 24px;
+  box-sizing: border-box;
 }
-
-/* Row layout: label left, value right */
 .totals-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
 }
-
 .totals-label {
-    color: var(--ecomm-text, #000000);
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 400;
-    font-family: inherit;
+  color: var(--ecomm-text, #000000);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  font-family: inherit;
 }
-
 .totals-value {
-    text-align: right;
-    color: var(--ecomm-text, #000000);
-    font-weight: 400;
-    font-family: inherit;
+  text-align: right;
+  color: var(--ecomm-text, #000000);
+  font-weight: 400;
+  font-family: inherit;
 }
-
-/* Savings (green) */
 .totals-label--saving,
 .totals-value--saving {
-    color: var(--ecomm-success, #029333);
-    font-weight: 400;
+  color: var(--ecomm-success, #029333);
+  font-weight: 400;
 }
-
-/* Divider between list rows and grand total */
 .totals-divider {
-    border: 0;
-    border-top: 1px solid #E3E3E3;
-    margin: 0;  
+  border: 0;
+  border-top: 1px solid #E3E3E3;
+  margin: 0;
 }
-
-/* Grand total emphasis */
 .totals-row--grand .totals-label--grand,
 .totals-row--grand .totals-value--grand {
-    font-size: 18px;
-    line-height: 28px;
-    font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 500;
 }
-
-/* Mobile: stack label & value for readability */
 @media (max-width: 480px) {
-    .totals-row {
-        grid-template-columns: 1fr;
-        row-gap: 4px;
-    }
-    .totals-value { text-align: left; }
+  .totals-row {
+    grid-template-columns: 1fr;
+    row-gap: 4px;
+  }
+  .totals-value { text-align: left; }
 }
 
-
-
-
-/* =======================================================================
-   Optional Items section
-   ======================================================================= */
-.optional-section .section-title {
-  /* inherits brand font & color */
-}
+/* =========================================================
+   OPTIONAL ITEMS (kept as-is in your file)
+   NOTE: If optional table also breaks at high zoom, tell me and I’ll
+   apply the same minmax + header-wrap rules there too.
+   ========================================================= */
+.optional-section .section-title { }
 
 .opt-subtitle {
   color: var(--ecomm-subtle);
@@ -564,66 +588,50 @@
   font-weight: 400;
   margin-top: .25rem;
 }
-
-/* Two-row table layout */
 .opt-items-table { margin-top: .5rem; }
 
 .opt-items-table .row.header {
   display: grid;
-  grid-template-columns: 60px 1fr 160px 160px 120px 180px; /* # | Name | P1 | P2 | Qty | Total */
+  grid-template-columns: 60px 1fr 160px 160px 120px 180px;
   gap: 16px;
   padding: 12px 0;
   border-bottom: 1px solid var(--ecomm-border);
   color: var(--ecomm-text);
 }
-
-/* Header cells — ALL headers should be 18/24 */
 .opt-items-table .row.header .cell {
-  font-weight: 600;           /* Figma Medium/Semibold look */
+  font-weight: 600;
   font-size: 18px;
   line-height: 24px;
   color: var(--ecomm-text);
 }
-
-/* Optional: keep '#' slightly muted but same size */
-.opt-items-table .row.header .cell.index {
-  color: var(--ecomm-subtle);
-}
+.opt-items-table .row.header .cell.index { color: var(--ecomm-subtle); }
 
 .opt-items-table .row.row-2line {
   display: grid;
   grid-template-columns: 60px 1fr 160px 160px 120px 180px;
   grid-template-areas:
-    "index-top    name-top   name-top   name-top   name-top   name-top"
-    "index-bottom meta       list-price net-price  qty        total";
-  gap: 8px 16px;  /* row gap, col gap */
+    "index-top name-top name-top name-top name-top name-top"
+    "index-bottom meta list-price net-price qty total";
+  gap: 8px 16px;
   padding: 12px 0 16px;
   border-bottom: 1px solid var(--ecomm-border);
   color: var(--ecomm-text);
 }
 
-/* Map areas (same class names) */
-.opt-items-table .index-top      { grid-area: index-top; }
-.opt-items-table .name-top       { grid-area: name-top; }
-.opt-items-table .index-bottom   { grid-area: index-bottom; }
-.opt-items-table .name-meta      { grid-area: meta; }
-.opt-items-table .list-price     { grid-area: list-price; }
-.opt-items-table .net-price      { grid-area: net-price; }
-.opt-items-table .qty-cell       { grid-area: qty; }
-.opt-items-table .total-cell     { grid-area: total; }
+.opt-items-table .index-top { grid-area: index-top; }
+.opt-items-table .name-top { grid-area: name-top; }
+.opt-items-table .index-bottom { grid-area: index-bottom; }
+.opt-items-table .name-meta { grid-area: meta; }
+.opt-items-table .list-price { grid-area: list-price; }
+.opt-items-table .net-price { grid-area: net-price; }
+.opt-items-table .qty-cell { grid-area: qty; }
+.opt-items-table .total-cell { grid-area: total; }
 
-/* =========================
-   Typography (Figma mapping)
-   ========================= */
-
-   
 .line-name {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-
-/* Body: Name/title — 18/24 */
 .opt-items-table .row.row-2line .cell.name,
 .opt-items-table .row.row-2line .line-name {
   font-weight: 600;
@@ -632,7 +640,6 @@
   color: var(--ecomm-text);
 }
 
-/* Body: subtext — 14/20, subtle grey */
 .opt-items-table .row.row-2line .name-meta .subtext {
   color: var(--ecomm-subtle);
   font-weight: 400;
@@ -640,8 +647,6 @@
   line-height: 20px;
   margin-top: .15rem;
 }
-
-
 .opt-items-table .row.row-2line .name-meta .subtext .cellValue {
   color: var(--ecomm-text);
   font-weight: 500;
@@ -649,19 +654,15 @@
   line-height: 20px;
 }
 
-
-/* Body: numeric cells — 14/20, weight 500
-   IMPORTANT: scope to body rows so header is not affected */
 .opt-items-table .row.row-2line .cell.price,
 .opt-items-table .row.row-2line .cell.qty,
-.opt-items-table .row.row-2line .cell.total  {
+.opt-items-table .row.row-2line .cell.total {
   font-weight: 500;
   font-size: 14px;
   line-height: 20px;
   color: var(--ecomm-text);
 }
 
-/* Ensure lightning base component inherits these metrics */
 .opt-items-table .row.row-2line .cell.price > lightning-formatted-number,
 .opt-items-table .row.row-2line .cell.total > lightning-formatted-number {
   font-size: inherit;
@@ -670,7 +671,6 @@
   color: inherit;
 }
 
-/* Index cell — 14/20, slightly muted */
 .opt-items-table .row.row-2line .cell.index {
   font-weight: 500;
   font-size: 14px;
@@ -678,14 +678,10 @@
   color: var(--ecomm-subtle);
 }
 
-/* Alignment */
-.opt-items-table .cell.qty   { text-align: left; }
+.opt-items-table .cell.qty { text-align: left; }
 .opt-items-table .cell.price,
 .opt-items-table .cell.total { text-align: right; }
 
-/* =========================
-   Responsive
-   ========================= */
 @media (max-width: 1024px) {
   .opt-items-table .row.header,
   .opt-items-table .row.row-2line {
@@ -693,7 +689,6 @@
     gap: 8px 12px;
   }
 }
-
 @media (max-width: 768px) {
   .opt-items-table .row.header,
   .opt-items-table .row.row-2line {
@@ -701,79 +696,62 @@
     gap: 8px 12px;
   }
 }
-
 @media (max-width: 480px) {
   .opt-items-table .row.header { display: none; }
 
   .opt-items-table .row.row-2line {
-    grid-template-columns: 40px 1fr;
+    grid-template-columns: 36px 1fr;
     grid-template-areas:
-      "index-top    name-top"
+      "index-top name-top"
       "index-bottom meta"
+      "index-bottom list-price"
+      "index-bottom net-price"
       "index-bottom qty"
       "index-bottom total";
-    gap: 6px 10px;
+    gap: 10px 12px;
+    padding: 14px 0 16px;
   }
 
-  /* Prices appear inline within the meta area (same line as Part#) */
-  .opt-items-table .list-price,
-  .opt-items-table .net-price {
-    display: inline-block;
-    grid-area: meta;
-    text-align: left;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
-    color: var(--ecomm-text);
-    margin-right: 12px;
-  }
+  .opt-items-table .list-price::before { content: "Unit list price"; }
+  .opt-items-table .net-price::before { content: "Unit net price"; }
+  .opt-items-table .qty-cell::before { content: "Quantity"; }
+  .opt-items-table .total-cell::before { content: "Line total"; }
 
-  .opt-items-table .qty-cell,
-  .opt-items-table .total-cell {
-    text-align: left;
-    color: var(--ecomm-text);
+  .opt-items-table .list-price::before,
+  .opt-items-table .net-price::before,
+  .opt-items-table .qty-cell::before,
+  .opt-items-table .total-cell::before {
+    display: block;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    color: var(--ecomm-subtle);
+    margin-bottom: 2px;
   }
 
   .opt-items-table .total-cell { font-weight: 600; }
 }
 
-.opt-warning{
-    color: var(--ecomm-danger);
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 400;
-    font-style: italic;
-    margin-top: 1rem;
+.opt-warning {
+  color: var(--ecomm-danger);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  font-style: italic;
+  margin-top: 1rem;
 }
 
-
-/* =======================================================================
-   Optional Items Total (compact card)
-   ======================================================================= */
-/* Wrapper width (align with main totals or full width as needed) */
-.optional-total-wrap {
-  width: 100%;                
-}
+/* Optional Items Total */
+.optional-total-wrap { width: 100%; }
 @media (max-width: 920px) { .optional-total-wrap { width: 100%; } }
 
-/* Compact card (only the grand total row) */
 .totals-card.optional-card {
-  background: #FBFBFB;         
-  border: 1px solid #E3E3E3;    
-  border-radius: 8px;           
-  padding: 24px 16px;           
+  background: #FBFBFB;
+  border: 1px solid #E3E3E3;
+  border-radius: 8px;
+  padding: 24px 16px;
   display: grid;
-  row-gap: 0;                  
-  min-height: 72px;           
+  row-gap: 0;
+  min-height: 72px;
   box-sizing: border-box;
 }
-
-/* Grand total emphasis (reuse your main totals styles) */
-.totals-row--grand .totals-label--grand,
-.totals-row--grand .totals-value--grand {
-    font-size: 18px;
-    line-height: 28px;
-    font-weight: 500;
-}
-.totals-row { display: grid; grid-template-columns: 1fr auto; align-items: center; }
-.totals-value { text-align: right; color: var(--ecomm-text); }
