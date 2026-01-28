@@ -1,0 +1,6 @@
+<apex:page sidebar="false" showHeader="false" standardstylesheets="false"
+
+    action="{!URLFOR($Resource.Help_Global_Account)}">
+    
+
+</apex:page>

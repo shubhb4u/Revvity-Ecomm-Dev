@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>54.0</apiVersion>
+    <availableInTouch>true</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>INC0294925 - Used to show Field to complete Values on Community Portal for Dealers</description>
+    <label>VF.PAGE OPP Fields To Complete</label>
+</ApexPage>

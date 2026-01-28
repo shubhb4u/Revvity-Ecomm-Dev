@@ -1,0 +1,36 @@
+<template>
+    <div class="custom-search-dropdown">
+        <div class="custom-search-dropdown-content">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control custom-search-wrapper">
+                    <lightning-icon icon-name="utility:search" variant="bare"
+                        class="custom-search-icon"></lightning-icon>
+                    <input type="search" id="quote-search-input" class="slds-input custom-search-input"
+                           placeholder="Search quote number"
+                           value={searchTerm}
+                           oninput={handleInputChange}
+                           autofocus />
+                </div>
+            </div>
+
+            <template if:true={hasResults}>
+                <ul class="slds-listbox slds-listbox_vertical custom-results-list" role="listbox">
+                    <template for:each={filteredQuotes} for:item="quote">
+                        <li key={quote.Id} class="slds-listbox-item custom-list-item" role="option">
+                            <div class="custom-quote-item"
+                                data-quote-id={quote.Id} onclick={handleSelectQuote}>
+                                <span class="custom-quote-name">{quote.Name}</span>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+
+            <template if:true={showNoResults}>
+                <div class="slds-text-align_center slds-p-around_medium slds-text-color_weak">
+                    No matching quotes found for "{searchTerm}"
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

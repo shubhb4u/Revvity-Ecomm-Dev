@@ -1,0 +1,41 @@
+<template>
+    <lightning-card title="E-Signature" icon-name="custom:custom63">
+        <!-- <div class="form-container"> -->
+            <!-- Dropdown to select Customer or Technician -->
+            <!-- <lightning-combobox 
+                label="Sign As" 
+                value={selectedRole} 
+                placeholder="Select Role" 
+                options={roleOptions} 
+                onchange={handleRoleChange}>
+            </lightning-combobox> -->
+        <!-- </div> -->
+        <div class="signature-container slds-p-top_x-small">
+            <!-- Canvas for signature -->
+            <canvas 
+                width="220" 
+                height="170"
+                class="canvas-border"
+                onmousedown={handleMouseDown} 
+                onmouseup={handleMouseUp} 
+                onmousemove={handleMouseMove} 
+                ontouchstart={handleTouchStart} 
+                ontouchend={handleTouchEnd} 
+                ontouchmove={handleTouchMove}>
+            </canvas>
+        </div>
+        <div class="slds-p-top_x-small">
+            <template lwc:if={isCustomer}>
+                <lightning-input type="text" label="Name:" value={customerName} onchange={nameHandler} required></lightning-input>
+            </template>
+            <template lwc:if={isTechnician}>
+                <lightning-input type="text" label="Name:" value={technicianName} onkeyup={nameHandler} required></lightning-input>
+            </template>
+            <lightning-input type="email" label="Email:" onkeyup={emailHandler}></lightning-input>
+        </div>
+        <div class="button-container slds-p-top_x-small">
+            <lightning-button label="Clear" variant="neutral" onclick={clearCanvas}></lightning-button>
+            <lightning-button label="Save Signature" variant="brand" onclick={saveSignature}></lightning-button>
+        </div>
+    </lightning-card>
+</template>

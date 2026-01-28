@@ -1,0 +1,35 @@
+<template>
+    <div class="pdf-generator-container">
+        <c-fs_wo-data-table record-id={recordId}></c-fs_wo-data-table>
+            <div class="signature-sections">
+                <div class="customer-section">
+                    <template lwc:if={showCustomerSignatureButton}>
+                        <lightning-button label="Customer Sign" onclick={openCustomerSignatureModal} class="customer-sign-button"></lightning-button>
+                    </template>
+                    <template lwc:if ={hideCustomerSignatureButton}>
+                        <lightning-button label="Remove Customer Sign" onclick={removeCustSignHandler}></lightning-button>
+                    </template>
+                    <template lwc:if={showCustomerSignature}>
+                        <!-- <c-fs_esign-table record-id={recordId}></c-fs_esign-table> -->
+                    </template>
+                </div>
+                <div class="technician-section">
+                    <template lwc:if={hideTechnicianSignatureButton}>
+                        <lightning-button label="Remove Technician Sign" onclick={removeTechSignHandler}></lightning-button>
+                    </template>
+                    <template lwc:if={showTechnicianSignatureButton}>
+                        <lightning-button label="Technician Sign" onclick={openTechnicianSignatureModal} class="technician-sign-button"></lightning-button>
+                    </template>
+                    <template if:true={showTechnicianSignature}>
+                        <!-- <lightning-formatted-rich-text value={technicianSignatureUrl}></lightning-formatted-rich-text> -->
+                    </template>
+                </div>
+            </div>
+        <template if:true={isCustomerSignatureModalOpen}>
+            <c-fs_e-signature record-id={recordId} selected-role="Customer__c" onsignaturecomplete={handleCustomerSignatureComplete}> </c-fs_e-signature>
+        </template>
+        <template if:true={isTechnicianSignatureModalOpen}>
+            <c-fs_e-signature record-id={recordId} selected-role="Technician__c" onsignaturecomplete={handleTechnicianSignatureComplete}></c-fs_e-signature>
+        </template>
+    </div>
+</template>

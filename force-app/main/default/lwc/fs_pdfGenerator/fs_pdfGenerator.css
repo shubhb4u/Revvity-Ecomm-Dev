@@ -1,0 +1,9 @@
+.signature-sections {
+    display: flex;
+    gap: 20px; /* Adjust the gap as needed */
+    margin-top: 20px;
+}
+
+.customer-section, .technician-section {
+    flex: 1;
+}

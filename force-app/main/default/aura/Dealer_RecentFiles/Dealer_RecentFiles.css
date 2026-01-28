@@ -1,0 +1,27 @@
+.THIS.c-container {
+    /*border: 1px solid #d8dde6;*/
+    margin: 10px 0 20px 0;
+}
+
+.THIS .custom-box {
+    /*text-align: center;
+    background-color: #f4f6f9;
+    padding: 0.5rem;
+    border: 1px solid #d8dde6;
+    border-radius: 5px;*/
+}
+.THIS .header-bg{
+    background-color: #D4C500;
+    /*height: 1.5rem;*/
+    padding: 20px;
+    margin: -17px;
+    color: black;
+    text-align: center;
+    border-radius: 0.2rem;
+}
+.THIS .slds-wrap {
+    padding-top: 30px;
+}
+.THIS .slds-box {
+ 	border:5px !important;
+}

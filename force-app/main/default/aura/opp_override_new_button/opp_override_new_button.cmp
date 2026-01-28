@@ -1,0 +1,12 @@
+<aura:component implements="lightning:actionOverride" access="global" controller="oppOverrideNewButtonController">
+    
+    <aura:attribute name="legacyCreatePermission" type="boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.changeUsrEntity}"
+                  description="override new opp button when this comp onloads"/>
+    
+    <aura:if isTrue="{!v.legacyCreatePermission}">
+        <b>To create an opportunity, please go to a contact first, then click the tab called "New Opp"</b> 
+    </aura:if>
+    
+</aura:component>
