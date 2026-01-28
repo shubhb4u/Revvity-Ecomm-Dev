@@ -1,56 +1,62 @@
-/* Dropdown container - inline replacement */
+
 .custom-search-dropdown {
-    width: 30%;
-    max-width: 600px;
-    margin-left: auto; /* Align to right */
+    width: 100%;
+    max-width: 400px; 
+    margin-left: auto; 
 }
 
 .custom-search-dropdown-content {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 1.5rem;
+    background: transparent; 
+    border-radius: 0; 
+    box-shadow: none; 
+    padding: 0; 
 }
 
-/* Search input styling */
+
 .custom-search-wrapper {
     position: relative;
+    margin-bottom: 1rem; 
 }
 
 .custom-search-input {
     border-radius: 50px !important;
-    padding-left: 3.25rem !important;
+    padding-left: 3.5rem !important;
     padding-right: 1.5rem !important;
-    height: 3rem;
-    border: 2px solid #c9c9c9 !important;
-    font-size: 1rem;
+    height: 3.5rem; 
+    border: 2px solid #000000 !important; 
+    font-size: 1.125rem; 
     background-color: white !important;
+    width: 100%;
 }
 
 .custom-search-input:focus {
-    border-color: #1589ee !important;
+    border-color: #000000 !important; 
     box-shadow: none !important;
+    outline: none !important;
 }
 
 .custom-search-input::placeholder {
-    color: #aeaeae;
+    color: #9ca3af; 
+    font-size: 1.125rem;
 }
 
 .custom-search-icon {
     position: absolute;
-    left: 1.25rem;
+    left: 1.5rem;
     top: 50%;
     transform: translateY(-50%);
     z-index: 10;
     pointer-events: none;
-    color: #7F03B0 !important;
+    color: #000000 !important; 
 }
 
 .custom-search-icon svg {
-    fill: #7F03B0 !important;
+    fill: #000000 !important; 
+    width: 24px !important;
+    height: 24px !important;
 }
 
-/* Results list styling */
+
 .custom-results-list {
     margin-top: 0.5rem;
     border: none;
@@ -77,7 +83,7 @@
 }
 
 .custom-quote-item:hover {
-    background-color: #d7e5fa;
+    background-color: #f3ebff; 
 }
 
 .custom-quote-name {
@@ -94,7 +100,12 @@
         max-width: 100%;
     }
     
-    .custom-search-dropdown-content {
-        padding: 1rem;
+    .custom-search-input {
+        height: 3rem;
+        font-size: 1rem;
+    }
+    
+    .custom-search-input::placeholder {
+        font-size: 1rem;
     }
 }

@@ -1,4 +1,3 @@
-
 :host {
   --ecomm-text: #000000;
   --ecomm-subtle: #6b7280;
@@ -49,10 +48,14 @@
   color: var(--ecomm-accent, #7F03B0);
   text-decoration: none;
 }
+
 .back-icon {
   position: relative;
+  text-decoration: none;
   top: -3px;
+    --sds-c-icon-color-foreground-default: var(--revvity-orchid) !important;
 }
+
 .header-row { margin-top: 1rem; }
 
 .quote-title {

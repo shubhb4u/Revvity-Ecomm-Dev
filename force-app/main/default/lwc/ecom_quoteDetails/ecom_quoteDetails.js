@@ -37,6 +37,7 @@ import getCPQQuotesDocumentApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsCont
 import getCPQQuoteStatusApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getCPQQuoteStatusApi';
 import getbaseUrl from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getbaseUrl';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import ssrc_ECOM_Theme from '@salesforce/resourceUrl/ssrc_ECOM_Theme';
 
 export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement) {
 
@@ -61,6 +62,11 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
     expiresOnClass: 'ecomm-value',
     expiresOn: ''
   };
+
+  @track
+    images = {
+        backicon:ssrc_ECOM_Theme + '/img/backicon.svg'
+    }
 
   @wire(getbaseUrl)
   wiredata(result) {
