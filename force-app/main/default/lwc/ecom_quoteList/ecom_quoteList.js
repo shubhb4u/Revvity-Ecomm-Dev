@@ -164,14 +164,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         return this.isExpiredSelected ? 'seg-btn is-active' : 'seg-btn is-inactive';
     }
 
-    // get sortOption() {
-    //     return [
-    //         { label: 'Sort by: Oldest', value: 'oldest' },
-    //         { label: 'Sort by: Newest', value: 'newest' },
-    //         { label: 'Sort by: Number of Items', value: 'items' },
-    //         { label: 'Sort by: Quote Total', value: 'totalAmount' }
-    //     ];
-    // }
 
 
     get sortOption() {
@@ -277,7 +269,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         });
     }
 
-    //sahithi changes
     @track showSearchModal = false;
 
     handleOpenSearchModal() {
