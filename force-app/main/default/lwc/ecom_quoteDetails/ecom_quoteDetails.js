@@ -96,7 +96,17 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
   
             if (dto?.success === true) {
                 if (dto.publicUrl) {
-                    window.open(dto.publicUrl, '_blank');
+                  console.log('[Download] Triggering browser download:', dto.publicUrl);
+
+                  // 🔹 Force download via temporary anchor
+                  const link = document.createElement('a');
+                  link.href = dto.publicUrl;
+                  link.setAttribute('download', ''); // hint to browser
+                  link.style.display = 'none';
+
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
                 } else {
                     console.error('[Download] success=true but publicUrl is missing', dto);
                 }
@@ -170,8 +180,16 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
 
     console.log('Display status:', displayStatus, 'Expires on:', quote.ValidUntil);
 
+    const processedLines = (quote.Lines || []).map((line, index) => {
+      return {
+        ...line,
+        displayIndex: index + 1
+      };
+    });
+ 
     this.currentQuote = {
       ...quote,
+      Lines: processedLines,
       _status: displayStatus,
       statusClass: this.getStatusClass(displayStatus),
       expiresOnClass: this.getExpiresOnClass(displayStatus),
@@ -223,4 +241,5 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
       }
     });
   }
+
 }
