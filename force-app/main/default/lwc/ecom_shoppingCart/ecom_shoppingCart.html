@@ -6,7 +6,7 @@
   @last modified by  : manish.joshi@revvity.com
 -->
 <template>
-    
+  <main id="main-content"><!--RWPS-5284-->
   <div class="background">
       <div class="body slds-align_absolute-center slds-p-right_medium ecom-mt-cart">
     <template if:true={showSpinner}>
@@ -64,7 +64,8 @@
           <c-ecom_inline-message type={type} message={message} show={show} onmessageaction={handleUpdateMessage} timespan={timeSpan}></c-ecom_inline-message>
           <!--c-ecom_inline-message type={type} message={message} show={show} onmessageaction={handleUpdateMessage} timespan={timeSpan}></c-ecom_inline-message--><!--8th Nov-->
         </div>
-        <!--RWPS-3026 and RWPS-2786 passed cartItemTariffCharge and cartitemDiscontinuedProducts-->
+        <!--RWPS-3026 and RWPS-2786 4896-Passed trainingProductMap passed cartItemTariffCharge and cartitemDiscontinuedProducts-->
+        <!-- RWPS-4896 Added generic-training-product-map={genericTrainingProductMap} -->
         <div if:true={cartItems}>
           <div if:true={productidToCartItemsMap}>
             <template for:each={productidToCartItemsMap} for:item="cartItems">
@@ -81,6 +82,8 @@
                   ongetshippingdates={getUpdatedDates}
                   cart-shipping-dates={cartShippingDates}
                   cart-item-tariff-charge={cartItemTariffCharge}
+                  training-product-map={trainingProductMap}
+                  generic-training-product-map={genericTrainingProductMap}
                   cartitem-discontinued-products={cartitemDiscontinuedProducts}
                   cart-sales-status={cartSalesStatus}
                   is-promo-applied={appliedPromotion}
@@ -263,4 +266,5 @@
 
   </div>
 </div>
+</main><!--RWPS-5284-->
 </template>

@@ -1,14 +1,19 @@
-import { LightningElement, track, wire } from 'lwc';
+import { LightningElement, track, wire, api } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
-import getQuoteData from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
+import getQuoteData from '@salesforce/apex/ECOM_QuoteController.fetchMyQuotesWithLines';
 import SORT_BY_OLDEST from '@salesforce/label/c.Sort_By_Oldest';
 import SORT_BY_NEWEST from '@salesforce/label/c.Sort_By_Newest';
 import SORT_BY_ITEMS from '@salesforce/label/c.Sort_By_Number_Of_Items';
 import SORT_BY_TOTAL from '@salesforce/label/c.Sort_By_Quote_Total';
-
+import communityId from '@salesforce/community/Id';
+import getOrCreateCartSummary from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.getCartSummary';
+import addOrReplaceItemsInCart from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.addOrReplaceQuoteItemsInCart';
+//import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import userId from '@salesforce/user/Id';
 
 export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
 
+    userId = userId;
     quotes = [];
     allQuotes = [];
     activeQuotes = [];
@@ -30,15 +35,24 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
     @track isLoading = false;
     allWiredData = [];
     error;
-    @track showSearchModal = false;
+    showSearchModal = false;
+    showAddtoCartModal = false;
+    selectedQuoteId;
+    @api effectiveAccountId;
+    @api cartId = '';
+    communityId = '';
+    requestQuoteValueMap;
 
+    
 
-    @wire(getQuoteData)
+    @wire(getQuoteData, { userId: '$userId'})
     wiredQuotes(result) {
         this.isLoading = true;
         this.allWiredData = result;
         if (result.data) {
+            //console.log('Result.data:::'+JSON.stringify(result.data));
             this.quotes = result.data;
+            //console.log('this.quotes:::'+JSON.stringify(this.quotes));
             this.processQuotes();
             this.isLoading = false;
         } else if (result.error) {
@@ -46,7 +60,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
             this.isLoading = false;
         }
     }
-
 
     processQuotes() {
         const today = this.startOfDay(new Date());
@@ -164,8 +177,6 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
         return this.isExpiredSelected ? 'seg-btn is-active' : 'seg-btn is-inactive';
     }
 
-
-
     get sortOption() {
         return [
             { label: SORT_BY_OLDEST, value: 'oldest' },
@@ -277,5 +288,116 @@ export default class Ecom_quoteList extends NavigationMixin(LightningElement) {
 
     handleCloseSearchModal() {
         this.showSearchModal = false;
+    }
+
+    //RWPS-5264 start --------------------------------------------
+
+    get resolvedEffectiveAccountId() {
+        const effectiveAccountId = this.effectiveAccountId || '';
+        let resolved = null;
+        if (
+            effectiveAccountId.length > 0 &&
+            effectiveAccountId !== '000000000000000'
+        ) {
+            resolved = effectiveAccountId;
+        }
+        return resolved;
+    }
+
+    //Check if cart exists, if not create new, if count cartItems> 0, then show modal to user to proceed/cancel
+    async handleAddToCart(event){
+        this.isLoading = true;
+        // Store the quote the user is trying to add (for use when proceeding)
+        this.selectedQuoteId = event && event.currentTarget ? event.currentTarget.dataset.quoteId : null;
+        try{
+            let cartSummary = await getOrCreateCartSummary({
+                communityId: communityId,
+                effectiveAccountId: this.effectiveAccountId,
+                cartId: this.cartId,
+            });
+            console.log('cartSummary', cartSummary);
+            if(cartSummary){
+                this.cartId = cartSummary.cartId;
+                console.log('Cart ID set to:', this.cartId);
+            }
+            if(cartSummary.uniqueProductCount > 0){
+                this.showAddtoCartModal = true;  
+            }else{
+                this.showAddtoCartModal = false;
+                this.handleProceedAddToCart();
+            }
+        }catch(error){
+            console.log('Error adding quote to cart:', error  );
+        }finally{
+            this.isLoading = false;
+        }
+    }
+
+    handleCancelAddToCart() {
+        this.showAddtoCartModal = false;
+        this.selectedQuoteId = null;
+    }
+
+    async handleProceedAddToCart() {
+        this.showAddtoCartModal = false;
+        this.isLoading = true;
+        try {
+
+            if (!this.cartId) {
+                console.error('Cart ID is missing');
+                this.isLoading = false;
+                return;
+            }
+
+            console.log('Adding quote to cart. QuoteId:', this.selectedQuoteId, 'CartId:', this.cartId);
+
+            let result = await addOrReplaceItemsInCart({
+                quoteId: this.selectedQuoteId, 
+                cartId: this.cartId,
+                replaceExisting: true,
+                communityId: communityId  
+            });
+
+            console.log('Result from addOrReplaceItemsInCart:', result);
+            
+            if (result.success) {
+                // Success! Navigate to cart
+                
+                // this.navigateToCart();
+            } else if (result.hasDiscontinued) {
+                // Has discontinued products - redirect to Request Quote
+                this.discontinuedProducts = result.discontinuedProducts;
+                this.redirectToRequestQuote();
+            } else {
+                // Other error
+                console.log(result.message);
+            }
+        } catch (error) {
+            console.log('Error adding quote to cart:', error);
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    navigateToCart() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/cart'
+            }
+        });
+    }
+
+    /**
+     * Redirect to Request Quote with quote data
+     */
+    redirectToRequestQuote() {
+        // Navigate to Request Quote page with quote number parameter
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: `/request-quote?fromQuote=${this.selectedQuoteId}`
+            }
+        });
     }
 }

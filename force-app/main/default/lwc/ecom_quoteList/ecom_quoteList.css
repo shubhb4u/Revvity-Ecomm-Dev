@@ -1,18 +1,18 @@
 :host {
   /* Palette */
-  --ecomm-text: #000000;             
-  --ecomm-subtle: #6b7280;           
-  --ecomm-border: #e5e7eb;           
-  --ecomm-border-strong: #d1d5db;    
+  --ecomm-text: #000000;
+  --ecomm-subtle: #6b7280;
+  --ecomm-border: #e5e7eb;
+  --ecomm-border-strong: #d1d5db;
   --ecomm-bg: #ffffff;
 
-  --ecomm-danger: #DC0101;           
-  --ecomm-success: #029333;          
+  --ecomm-danger: #DC0101;
+  --ecomm-success: #029333;
 
   /* Brand (Figma Orchid) */
   --revvity-orchid: var(--Revvity-Orchid, #7F03B0);
-  --revvity-orchid-600: #6a0294;    
-  --revvity-orchid-700: #59027b;    
+  --revvity-orchid-600: #6a0294;
+  --revvity-orchid-700: #59027b;
 
   /* Keep legacy accent alias for existing selectors */
   --ecomm-accent: var(--revvity-orchid);
@@ -24,10 +24,23 @@
   --ecomm-shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.06);
 }
 
-.ecomm-value { font-size: 14px; font-weight: 600; color: var(--ecomm-text, #1f2937); }
-.ecomm-status--active  { color: var(--ecomm-success, #029333); } 
-.ecomm-status--expired { color: var(--ecomm-danger,  #DC0101); }
-.ecomm-status--neutral { color: var(--ecomm-subtle,  #6b7280); } 
+.ecomm-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ecomm-text, #1f2937);
+}
+
+.ecomm-status--active {
+  color: var(--ecomm-success, #029333);
+}
+
+.ecomm-status--expired {
+  color: var(--ecomm-danger, #DC0101);
+}
+
+.ecomm-status--neutral {
+  color: var(--ecomm-subtle, #6b7280);
+}
 
 /* Base container */
 .ecomm {
@@ -51,7 +64,7 @@
   border: 1px solid var(--ecomm-border-strong);
   border-radius: var(--ecomm-radius-pill);
   overflow: hidden;
-  background: #e6e6e9; 
+  background: #e6e6e9;
 }
 
 .seg-btn {
@@ -60,13 +73,13 @@
   font-size: 18px;
   line-height: 1.2;
   color: var(--ecomm-text);
-  background: transparent; 
+  background: transparent;
   border: none;
   cursor: pointer;
   user-select: none;
 }
 
-.seg-btn + .seg-btn {
+.seg-btn+.seg-btn {
   border-left: 1px solid var(--ecomm-border-strong);
 }
 
@@ -77,28 +90,42 @@
 }
 
 .seg-btn.is-inactive {
-  background: transparent; 
+  background: transparent;
   color: var(--ecomm-subtle);
 }
 
-.seg-btn:hover { filter: brightness(0.98); }
-.seg-btn:focus-visible { outline: 2px solid var(--revvity-orchid); outline-offset: -2px; }
+.seg-btn:hover {
+  filter: brightness(0.98);
+}
 
-.slds-grid.slds-wrap > .seg-switch {  
+.seg-btn:focus-visible {
+  outline: 2px solid var(--revvity-orchid);
+  outline-offset: -2px;
+}
+
+.slds-grid.slds-wrap>.seg-switch {
   flex: 1 1 100%;
   order: 2;
   margin-top: 8px;
 }
 
 @media (max-width: 420px) {
-  .seg-switch { display: grid; grid-template-columns: 1fr; }
-  .seg-btn + .seg-btn { border-left: none; border-top: 1px solid var(--ecomm-border-strong); }
+  .seg-switch {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .seg-btn+.seg-btn {
+    border-left: none;
+    border-top: 1px solid var(--ecomm-border-strong);
+  }
 }
 
 /* Quote search wrapper - inline replacement */
 .quote-search-wrapper {
   position: relative;
-  min-height: 40px; /* Minimum height for the "Find a quote" link */
+  min-height: 40px;
+  /* Minimum height for the "Find a quote" link */
 }
 
 /* Accent link (Find a quote) */
@@ -114,7 +141,7 @@
 
 .ecomm-link:hover {
   color: var(--revvity-orchid-600) !important;
-  text-decoration: underline; 
+  text-decoration: underline;
 }
 
 /* Fix search icon color to match Find a quote text */
@@ -208,12 +235,12 @@ lightning-combobox.custom-sort-combobox {
     flex-wrap: wrap;
     align-items: flex-start;
   }
-  
+
   .ecomm-quote-number-col {
     flex: 1 1 auto;
     min-width: 140px;
   }
-  
+
   .ecomm-button-col {
     width: 100%;
     padding-top: 8px;
@@ -226,12 +253,12 @@ lightning-combobox.custom-sort-combobox {
     align-items: center;
     gap: 16px;
   }
-  
+
   .ecomm-quote-number-col {
     flex: 1 1 auto;
     min-width: 0;
   }
-  
+
   .ecomm-button-col {
     width: auto;
     padding-top: 0;
@@ -240,13 +267,13 @@ lightning-combobox.custom-sort-combobox {
   }
 }
 
-.ecomm-number { 
+.ecomm-number {
   font-size: x-large;
-  font-weight: 500; 
+  font-weight: 500;
 }
 
 .slds-card__body_inner .slds-grid {
-  column-gap: 12px;  
+  column-gap: 12px;
   row-gap: 8px;
 }
 
@@ -276,12 +303,12 @@ lightning-combobox.custom-sort-combobox {
   .ecomm-card-body-grid {
     gap: 12px 12px;
   }
-  
+
   .ecomm-field-col {
     flex: 0 1 calc(50% - 6px);
     min-width: 70px;
   }
-  
+
   .ecomm-details-link {
     flex: 1 1 100%;
     order: 10;
@@ -296,12 +323,12 @@ lightning-combobox.custom-sort-combobox {
     flex-wrap: wrap;
     gap: 16px;
   }
-  
+
   .ecomm-field-col {
     flex: 0 1 calc(50% - 8px);
     min-width: 110px;
   }
-  
+
   .ecomm-details-link {
     flex: 1 1 100%;
     order: 10;
@@ -337,20 +364,25 @@ lightning-combobox.custom-sort-combobox {
 
 .ecomm-label {
   font-size: 14px;
-  font-weight: 700;            
+  font-weight: 700;
   letter-spacing: 0.02em;
-  margin-bottom: 6px;          
+  margin-bottom: 6px;
 }
 
 .ecomm-value {
   font-size: 18px;
-  font-weight: 400;           
+  font-weight: 400;
   color: var(--ecomm-text);
 }
 
 .ecomm-value--danger,
-.ecomm-status--expired { color: var(--ecomm-danger); }
-.ecomm-status--active { color: var(--ecomm-success); }
+.ecomm-status--expired {
+  color: var(--ecomm-danger);
+}
+
+.ecomm-status--active {
+  color: var(--ecomm-success);
+}
 
 /* Buttons — brand primary */
 .btn-primary {
@@ -394,17 +426,25 @@ lightning-combobox.custom-sort-combobox {
 }
 
 @keyframes btn-dissolve {
-  0%   { opacity: 1; }
-  50%  { opacity: 0.85; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Buttons — brand secondary */
 .btn-secondary {
-  background-color: transparent;                  
-  color: var(--revvity-orchid);                
-  border: 2px solid var(--revvity-orchid);        
-  border-radius: 24px;                          
+  background-color: transparent;
+  color: var(--revvity-orchid);
+  border: 2px solid var(--revvity-orchid);
+  border-radius: 24px;
   padding: 10px 18px;
   font-size: 18px;
   font-weight: 600;
@@ -446,7 +486,9 @@ lightning-combobox.custom-sort-combobox {
 }
 
 @media (max-width: 860px) {
-  .seg-switch { max-width: 640px; }
+  .seg-switch {
+    max-width: 640px;
+  }
 }
 
 .ecomm-details-link {
@@ -457,4 +499,14 @@ lightning-combobox.custom-sort-combobox {
 .ecomm-details-link a.ecomm-link {
   color: var(--revvity-orchid) !important;
   font-weight: 500;
+}
+
+.ecomm-no-quotes-container {
+  font-family: Hanken Grotesk !important;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0em;
+  text-align: left;
+
 }

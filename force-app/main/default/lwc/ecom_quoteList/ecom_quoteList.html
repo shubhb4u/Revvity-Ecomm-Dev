@@ -107,7 +107,14 @@
                 <!-- Right: action button, right aligned -->
                 <div class="ecomm-button-col">
                   <template lwc:if={isActiveSelected}>
-                    <button type="button" class="btn-primary">Add quote to cart</button>
+                    <button
+                      type="button"
+                      class="btn-primary"
+                      data-quote-id={quote.Id}
+                      onclick={handleAddToCart}
+                    >
+                      Add quote to cart
+                    </button>
                   </template>
                   <template lwc:if={isExpiredSelected}>
                     <button type="button" class="btn-secondary">Request again</button>
@@ -162,8 +169,8 @@
         </template>
       </template>
       <template if:false={hasQuotesToDisplay}>
-        <div class="slds-m-top_large slds-text-align_center">
-          <p class="slds-text-body_regular slds-m-bottom_small">0 Quotes in My Quotes</p>
+        <div class="ecomm-no-quotes-container slds-m-top_large">
+          <p class="slds-m-bottom_small">0 Quotes in My Quotes</p>
         </div>
       </template>
 
@@ -178,6 +185,46 @@
           </div>
         </template>
       </div>
+    </template>
+
+
+    <!-- RWPS-5264 ->>> Add to Cart Confirmation Modal -->
+    <template if:true={showAddtoCartModal}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-modal="true"
+        aria-labelledby="addToCartConfirmTitle"
+        class="slds-modal slds-fade-in-open"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <h2 id="addToCartConfirmTitle" class="slds-text-heading_medium">
+              Confirm cart replacement
+            </h2>
+          </header>
+          <div class="slds-modal__content slds-p-around_medium">
+            <p>
+              Your existing cart items will be replaced. Do you still want to proceed?
+            </p>
+          </div>
+          <footer class="slds-modal__footer">
+            <button
+              class="slds-button slds-button_neutral"
+              onclick={handleCancelAddToCart}
+            >
+              Cancel
+            </button>
+            <button
+              class="slds-button slds-button_brand"
+              onclick={handleProceedAddToCart}
+            >
+              Proceed
+            </button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
   </div>
 </template>

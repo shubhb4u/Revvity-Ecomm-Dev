@@ -1,0 +1,467 @@
+/* Prevent padding/border from causing overflow */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ======================
+ BASE CONTAINER
+ ====================== */
+.quote-cart {
+  padding: 16px;
+  background: #ffffff;
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Helvetica Neue', Arial, sans-serif;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ======================
+ HEADER
+ ====================== */
+.quote-header h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+  font-weight: 500;
+  line-height: 40px;
+  color: #000000;
+}
+
+/* ======================
+ SUCCESS BANNER
+ ====================== */
+.success-banner {
+  background: #DBF3E3;
+  padding: 16px;
+  border: 1px solid #029333;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.success-banner-text {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+.close {
+  cursor: pointer;
+  font-size: 20px;
+  color: #029333;
+}
+
+/* ======================
+ QUOTE SUMMARY
+ ====================== */
+.quote-summary-container {
+  border: 1px solid #E3E3E3;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 100%;
+}
+
+/* FIX: Make header more zoom-stable than flex wrap */
+.quote-summary-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.quote-summary-header h2 {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+}
+
+.quote-pricing {
+  text-align: right;
+  justify-self: end;
+  max-width: 100%;
+}
+
+.quote-pricing .total {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.quote-pricing .savings {
+  color: #218529;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: normal; /* allow wrap at zoom */
+}
+
+/* ======================
+ ITEMS TABLE - DESKTOP
+ ====================== */
+.items-table {
+  margin-top: 0.5rem;
+  max-width: 100%;
+}
+
+/* FIX: Use flexible/shrinkable columns to survive zoom changes */
+.items-table .row.header {
+  display: grid;
+  grid-template-columns:
+    32px
+    minmax(0, 1fr)
+    clamp(120px, 15vw, 170px)
+    clamp(120px, 15vw, 170px)
+    clamp(70px, 10vw, 110px)
+    clamp(120px, 15vw, 190px);
+  gap: 16px;
+  padding: 12px 8px;              /* FIX: row-level padding so columns align */
+  border-bottom: 1px solid #E3E3E3;
+  color: #000000;
+}
+
+/* Header typography */
+.items-table .row.header .cell {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: #000000;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: auto;
+
+  padding: 0;                      /* FIX: remove per-cell padding mismatch */
+}
+
+/* Keep 'Name' header readable (optional; can wrap if you prefer) */
+.items-table .row.header .cell.name {
+  white-space: nowrap;
+}
+
+.items-table .row.header .cell.index {
+  color: #000000;
+  font-weight: 700;                  /* Make "#" bold */
+  text-align: right;                 /* Hug the Name column */
+}
+
+/* Data row grid */
+.items-table .row.row-2line {
+  display: grid;
+  grid-template-columns:
+    32px
+    minmax(0, 1fr)
+    clamp(120px, 15vw, 170px)
+    clamp(120px, 15vw, 170px)
+    clamp(70px, 10vw, 110px)
+    clamp(120px, 15vw, 190px);
+
+  
+    grid-template-areas:
+        "index-top    name-top    name-top    name-top    name-top    name-top"
+        "index-bottom meta        list-price  net-price   qty         total"
+        "index-bottom desc        desc        desc        desc        desc";
+
+
+  gap: 8px 16px;
+  padding: 12px 8px 16px;          /* FIX: row-level padding for alignment */
+  border-bottom: 1px solid #E3E3E3;
+  color: #000000;
+}
+
+/* Remove horizontal gap between index and Name (and other columns) */
+.items-table .row.header,
+.items-table .row.row-2line {
+  column-gap: 8px;  /* small but visible space between "#" and "Name" (and other columns) */
+}
+
+/* Areas */
+.index-top { grid-area: index-top; }
+.name-top { grid-area: name-top; }
+.index-bottom { grid-area: index-bottom; }
+.name-meta { grid-area: meta; }
+.list-price { grid-area: list-price; }
+.net-price { grid-area: net-price; }
+.qty-cell { grid-area: qty; }
+.total-cell { grid-area: total; }
+
+/* FIX: allow grid children to shrink and prevent overflow */
+.items-table .row.header > .cell,
+.items-table .row.row-2line > .cell {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Typography */
+.items-table .row.row-2line .cell.name,
+.items-table .row.row-2line .line-name {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: #000000;
+}
+
+.line-name {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Meta text */
+.subtext {
+  color: #6b7280;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: 0.5rem;
+}
+
+/* FIX: allow meta to use full width */
+.name-meta {
+  max-width: 100%;
+}
+
+.cellValue {
+  color: #000000;
+  font-weight: 500;
+}
+
+/* Numeric body typography */
+.items-table .row.row-2line .cell.price,
+.items-table .row.row-2line .cell.qty,
+.items-table .row.row-2line .cell.total {
+  font-weight: 400 !important;
+  font-size: 14px;
+  line-height: 20px;
+  color: #000000;
+  margin-top: 0.5rem;
+}
+
+/* Index body */
+.items-table .row.row-2line .cell.index {
+  font-weight: 500;                  
+  font-size: 18px;
+  line-height: 24px;
+  color: #000000; 
+  text-align: right;                 /* Align with "#" in header */
+}
+
+/* Alignment rules */
+.items-table .row.header .cell.price,
+.items-table .row.header .cell.qty,
+.items-table .row.row-2line .cell.price,
+.items-table .row.row-2line .cell.qty {
+  text-align: left;
+}
+
+.items-table .row.header .cell.total,
+.items-table .row.row-2line .cell.total,
+.items-table .row.row-2line .total-cell {
+  text-align: right;
+}
+
+/* Keep amounts on one line (desktop/tablet only) */
+.items-table .row.row-2line .cell.price,
+.items-table .row.row-2line .cell.total {
+  white-space: nowrap;
+}
+
+/* Remove action */
+.remove-action {
+  margin-top: 16px;
+  padding-top: 16px;
+}
+.remove-action a {
+  color: #6a1b9a;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* ======================
+ ZOOM / MID-WIDTH SAFETY
+ ====================== */
+@media (max-width: 900px) {
+  .items-table .row.header,
+  .items-table .row.row-2line {
+    gap: 8px 12px;
+  }
+}
+
+/* ======================
+ MEDIUM SCREENS (TABLETS)
+ ====================== */
+@media (max-width: 1024px) {
+  /* keep flexible columns; just tighten clamps a bit */
+  .items-table .row.header,
+  .items-table .row.row-2line {
+    grid-template-columns:
+      32px
+      minmax(0, 1fr)
+      clamp(110px, 16vw, 160px)
+      clamp(110px, 16vw, 160px)
+      clamp(70px, 10vw, 100px)
+      clamp(110px, 16vw, 180px);
+    gap: 8px 12px;
+  }
+}
+
+/* ======================
+ MOBILE / TABLET - STACKED CARD LAYOUT
+ ====================== */
+@media (max-width: 768px) {
+  /* Header sizes */
+  .quote-header h1 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .quote-summary-container {
+    padding: 16px;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .quote-summary-header {
+    display: flex;                 /* mobile: stack naturally */
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quote-summary-header h2 {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .quote-pricing {
+    text-align: left;
+    justify-self: auto;
+  }
+
+  /* Hide the table header row */
+  .items-table .row.header {
+    display: none;
+  }
+
+  /* Card layout for each line item */
+  .items-table .row.row-2line {
+    display: grid;
+    width: 100%;
+    max-width: 100%;
+    /* NOTE: Keep if you need strict clipping; otherwise remove */
+    overflow: hidden;
+
+    grid-template-columns: 32px 1fr;
+    grid-template-areas:
+      "index-top name-top"
+      "index-bottom meta"
+      "index-bottom list-price"
+      "index-bottom net-price"
+      "index-bottom qty"
+      "index-bottom total";
+
+    gap: 10px 12px;
+    padding: 14px 12px 16px;
+    margin: 12px 0;
+
+    border: 1px solid #E3E3E3;
+    border-radius: 8px;
+    background: #ffffff;
+
+    border-bottom: none;
+  }
+
+  /* Critical: allow grid children to shrink */
+  .items-table .row.row-2line > .cell {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Stacked view: left align + allow wrapping (override desktop nowrap) */
+  .items-table .row.row-2line .cell.price,
+  .items-table .row.row-2line .cell.qty,
+  .items-table .row.row-2line .cell.total {
+    text-align: left;
+    padding: 0;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Labels for stacked view */
+  .items-table .list-price::before { content: "Unit list price"; }
+  .items-table .net-price::before { content: "Unit net price"; }
+  .items-table .qty-cell::before { content: "Quantity"; }
+  .items-table .total-cell::before { content: "Line total"; }
+
+  .items-table .list-price::before,
+  .items-table .net-price::before,
+  .items-table .qty-cell::before,
+  .items-table .total-cell::before {
+    display: block;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 2px;
+  }
+
+  /* Make product name slightly smaller on mobile */
+  .items-table .line-name {
+    font-size: 16px;
+    line-height: 22px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Emphasize total */
+  .items-table .total-cell {
+    font-weight: 700;
+  }
+
+  .items-table .cell.index {
+    padding-top: 2px;
+  }
+
+  /* Adjust success banner for mobile */
+  .success-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .success-banner .close {
+    align-self: flex-end;
+    margin-top: -8px;
+  }
+}
+
+/* ======================
+ EXTRA SMALL MOBILE
+ ====================== */
+@media (max-width: 480px) {
+  .quote-cart {
+    padding: 12px;
+  }
+
+  .quote-header h1 {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .quote-summary-container {
+    padding: 12px;
+  }
+
+  .quote-summary-header h2 {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .success-banner-text {
+    font-size: 14px;
+  }
+}
+
+
+.part-meta { grid-area: meta; }
+.desc-meta { grid-area: desc; }

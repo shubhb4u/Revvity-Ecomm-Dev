@@ -116,7 +116,7 @@ public without sharing class ECOM_CartRepo {
     **/
     public static List<WebCart> getCartDetails(String cartId)
     {
-        List<WebCart> carts = [SELECT Id, ECOM_isTaxExempt__c, ECOM_CharityNumber__c, Default_Bill_to_ERP_Address__c, Default_Ship_to_ERP_Address__c FROM WebCart WHERE Id =:cartId];
+        List<WebCart> carts = [SELECT Id, AccountId, ECOM_isTaxExempt__c, ECOM_CharityNumber__c, Default_Bill_to_ERP_Address__c, Default_Ship_to_ERP_Address__c FROM WebCart WHERE Id =:cartId];
         return carts;
     }
 

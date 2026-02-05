@@ -6,4 +6,10 @@
         <target>lightningCommunity__Default</target>
         <target>lightningCommunity__Page</target>
     </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="effectiveAccountId" type="String" label="Effective Account Id" description="The ID of the account under which the user is acting" default="{!CurrentUser.effectiveAccountId}" />
+            <property name="cartId" type="String" label="Cart ID" description="The ID of the current cart" default="{!Cart.Details.cartId}"/>
+        </targetConfig>
+    </targetConfigs>
 </LightningComponentBundle>

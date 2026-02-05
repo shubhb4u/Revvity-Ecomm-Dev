@@ -58,6 +58,7 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
             SELECT Id,
                    Name,
                    SBQQ__Quote__c,
+                   SBQQ__Product__c,
                    SBQQ__Product__r.Name,
                    SBQQ__Product__r.Part_Number__c,
                    SBQQ__Product__r.Description,
@@ -67,7 +68,15 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
                    SBQQ__NetPrice__c,
                    SBQQ__NetTotal__c,
                    SBQQ__Optional__c,
-                   SBQQ__Discount__c
+                   SBQQ__Discount__c,
+                   SBQQ__ListTotal__c,
+                   SBQQ__CustomerTotal__c,
+                   SBQQ__TotalDiscountAmount__c,
+                   SBQQ__AdditionalDiscountAmount__c,
+                   Tax__c,
+                   fxEffectiveTax__c,
+                   Freight__c,
+                   CurrencyIsoCode
             FROM SBQQ__QuoteLine__c
             WHERE SBQQ__Quote__c IN :quoteIds
             ORDER BY SBQQ__Quote__c, CreatedDate ASC
@@ -114,7 +123,6 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
         public Decimal GrandTotal;
         public String SoldToAddress;
         public String PayerAddress;
-
         public List<QuoteLineDto> Lines;
 
         public QuoteWithLinesDto() {}
@@ -143,6 +151,7 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
     global class QuoteLineDto {
         public Id Id;
         public String Name;
+        public Id ProductId;
         public String ProductName;
         public String PartNumber;
         public String Description;
@@ -152,11 +161,20 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
         public Decimal LineTotal;
         public Boolean IsOptional;
         public Decimal Discount;
+        public Decimal ListTotal;
+        public Decimal CustomerTotal;
+        public Decimal TotalDiscountAmount;
+        public Decimal AdditionalDiscountAmount;
+        public Decimal Tax;
+        public Decimal EffectiveTax;
+        public Decimal Freight;
+        public String CurrencyIsoCode;
 
         public QuoteLineDto() {}
         public QuoteLineDto(SBQQ__QuoteLine__c l) {
             Id          = l.Id;
             Name        = l.Name;
+            ProductId   = l.SBQQ__Product__c;
             ProductName = l.SBQQ__Product__r != null ? l.SBQQ__Product__r.Name : null;
             PartNumber  = l.SBQQ__Product__r != null ? l.SBQQ__Product__r.Part_Number__c : null;
             Description = l.SBQQ__Product__r != null ? l.SBQQ__Product__r.Description : null;
@@ -166,6 +184,14 @@ global with sharing class ECOM_CPQQuoteWithLinesApi {
             LineTotal    = l.SBQQ__NetTotal__c;
             IsOptional  = l.SBQQ__Optional__c;
             Discount    = l.SBQQ__Discount__c;
+            ListTotal   = l.SBQQ__ListTotal__c;
+            CustomerTotal = l.SBQQ__CustomerTotal__c;
+            TotalDiscountAmount = l.SBQQ__TotalDiscountAmount__c;
+            AdditionalDiscountAmount = l.SBQQ__AdditionalDiscountAmount__c;
+            Tax = l.Tax__c;
+            EffectiveTax = l.fxEffectiveTax__c;
+            Freight = l.Freight__c;
+            CurrencyIsoCode = l.CurrencyIsoCode;
         }
     }
 

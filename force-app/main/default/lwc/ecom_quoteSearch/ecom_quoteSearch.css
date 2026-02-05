@@ -1,23 +1,24 @@
-
 .custom-search-dropdown {
     width: 100%;
     max-width: 400px; 
-    margin-left: auto; 
+    height: 48px;
+    margin-left: auto;
+    margin-bottom: 10px; 
+    position: relative; 
 }
-
+ 
 .custom-search-dropdown-content {
     background: transparent; 
     border-radius: 0; 
     box-shadow: none; 
     padding: 0; 
 }
-
-
+ 
 .custom-search-wrapper {
     position: relative;
-    margin-bottom: 1rem; 
+    /* Remove margin-bottom to prevent space when dropdown is closed */
 }
-
+ 
 .custom-search-input {
     border-radius: 50px !important;
     padding-left: 3.5rem !important;
@@ -28,18 +29,18 @@
     background-color: white !important;
     width: 100%;
 }
-
+ 
 .custom-search-input:focus {
     border-color: #000000 !important; 
     box-shadow: none !important;
     outline: none !important;
 }
-
+ 
 .custom-search-input::placeholder {
     color: #9ca3af; 
     font-size: 1.125rem;
 }
-
+ 
 .custom-search-icon {
     position: absolute;
     left: 1.5rem;
@@ -49,29 +50,36 @@
     pointer-events: none;
     color: #000000 !important; 
 }
-
+ 
 .custom-search-icon svg {
     fill: #000000 !important; 
     width: 24px !important;
     height: 24px !important;
 }
-
-
+ 
+/* KEY CHANGES: Make results list overlay content */
 .custom-results-list {
-    margin-top: 0.5rem;
-    border: none;
-    box-shadow: none;
-    background: transparent;
+    position: absolute; /* Changed from relative to absolute */
+    top: calc(100% + 0.5rem); /* Position below the input with 0.5rem gap */
+    left: 0;
+    right: 0;
+    z-index: 1000; /* High z-index to appear above other content */
+    margin-top: 0;
+    border: 1px solid #e5e7eb; /* Add border for visibility */
+    border-radius: 12px; /* Match your card radius */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Add shadow for depth */
+    background: white; /* Solid background */
     max-height: 400px;
     overflow-y: auto;
+    padding: 0.5rem; /* Add some internal padding */
 }
-
+ 
 .custom-list-item {
     border: none;
     padding: 0;
     margin-bottom: 0.25rem;
 }
-
+ 
 .custom-quote-item {
     padding: 0.875rem 1.5rem;
     cursor: pointer;
@@ -82,10 +90,11 @@
     width: 100%; 
 }
 
-.custom-quote-item:hover {
-    background-color: #f3ebff; 
+ 
+.custom-quote-item:hover .custom-quote-name {
+    color: #7F03B0; 
 }
-
+ 
 .custom-quote-name {
     font-size: 1rem;
     color: #3e3e3c;
@@ -93,19 +102,34 @@
     display: block; 
     text-align: left;
 }
-
+ 
+/* No results message styling */
+.custom-results-list .slds-text-align_center {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+}
+ 
 /* Responsive */
 @media (max-width: 640px) {
     .custom-search-dropdown {
         max-width: 100%;
     }
-    
     .custom-search-input {
         height: 3rem;
         font-size: 1rem;
     }
-    
     .custom-search-input::placeholder {
         font-size: 1rem;
+    }
+    .custom-results-list {
+        max-height: 300px; /* Reduce height on mobile */
     }
 }

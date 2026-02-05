@@ -2348,4 +2348,276 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
             }
         }
     }
+
+    /**
+     * @description Adds quote line items to cart using Connect API pattern
+     * @author Shubham Mazumdar | Feb 05, 2026
+     * @param quoteLines List of quote line data from CPQ
+     * @param cartId Cart ID
+     * @param replaceExisting Whether to replace existing items
+     * @param quoteData Full quote data including discount
+     * @return Map<String, Object>
+     */
+    public static Map<String, Object> addQuoteItemsToCart(
+        List<Map<String, Object>> quoteLines,
+        String cartId,
+        Boolean replaceExisting,
+        Map<String, Object> quoteData,
+        String communityId 
+    ) {
+        Map<String, Object> response = new Map<String, Object>();
+        String supportData = JSON.serialize(quoteLines);
+        
+        try {
+            // Step 1: Get cart and webstore details
+            List<WebCart> carts = ECOM_CartRepo.getCartDetails(cartId);
+            if (carts.isEmpty()) {
+                response.put('success', false);
+                response.put('message', 'Cart not found');
+                return response;
+            }
+            String webstoreId = ECOM_Util.resolveCommunityIdToWebstoreId(communityId);
+            WebCart cart = carts[0];
+            String effectiveAccountId = cart.AccountId;
+            
+            // Step 2: Extract Product IDs for validation
+            Set<String> productIds = new Set<String>();
+            Map<String, Map<String, Object>> productIdToQuoteLine = new Map<String, Map<String, Object>>();
+            
+            for (Map<String, Object> quoteLine : quoteLines) {
+                String productId = String.valueOf(quoteLine.get('ProductId'));
+                if (String.isNotBlank(productId)) {
+                    productIds.add(productId);
+                    productIdToQuoteLine.put(productId, quoteLine);
+                }
+            }
+            
+            // Step 3: Check for discontinued products
+            List<String> discontinuedProducts = ECOM_CartUtil.getNonSellableDiscountinuedProducts(
+                productIds, 
+                'discontinued'
+            );
+            
+            if (!discontinuedProducts.isEmpty()) {
+                response.put('success', false);
+                response.put('hasDiscontinued', true);
+                response.put('discontinuedProducts', discontinuedProducts);
+                response.put('message', 'Quote contains discontinued products');
+                return response;
+            }
+            
+            // Step 4: If replacing, delete existing cart items and clear promo
+            if (replaceExisting) {
+                List<CartItem> existingItems = ECOM_CartRepo.getCartItemsByCartId(cartId);
+                if (!existingItems.isEmpty()) {
+                    ECOM_CartRepo.deleteCartItems(existingItems);
+                }
+                
+                // Clear promo code
+                cart.ECOM_Promo_Code__c = '';
+                cart.ECOM_Total_Savings__c = 0;
+                ECOM_CartRepo.updateCart(new List<WebCart>{ cart });
+            }
+            
+            // Step 5: Prepare Connect API batch input
+            List<ConnectApi.BatchInput> batchInputs = new List<ConnectApi.BatchInput>();
+            List<String> productIdsByIndex = new List<String>(); // Store productIds in order
+            
+            for (Map<String, Object> quoteLine : quoteLines) {
+                String productId = String.valueOf(quoteLine.get('ProductId'));
+                Decimal quantity = Decimal.valueOf(String.valueOf(quoteLine.get('Quantity')));
+                
+                ConnectApi.CartItemInput cartInput = new ConnectApi.CartItemInput();
+                cartInput.productId = productId;
+                cartInput.quantity = String.valueOf(Math.round(quantity));
+                cartInput.type = ConnectApi.CartItemType.PRODUCT;
+                
+                ConnectApi.BatchInput batchInput = new ConnectApi.BatchInput(cartInput);
+                batchInputs.add(batchInput);
+                productIdsByIndex.add(productId); // Store productId at same index
+            }
+            
+            // Step 6: Insert via Connect API (this auto-creates CartDeliveryGroup)
+            ConnectApi.BatchResult[] batchResults = Test.isRunningTest() ? null : 
+                ConnectApi.CommerceCart.addItemsToCart(
+                    webstoreId, 
+                    effectiveAccountId, 
+                    cartId, 
+                    batchInputs
+                );
+            
+            // Step 7: Update prices from quote
+            List<CartItem> cartItemsToUpdate = new List<CartItem>();
+            Map<String, String> insertedCartItems = new Map<String, String>(); // productId -> cartItemId
+            List<String> failedProducts = new List<String>();
+            List<String> errorMessages = new List<String>();
+            
+            if (batchResults != null) {
+                System.debug('Total batch results: ' + batchResults.size());
+                
+                for (Integer i = 0; i < batchResults.size(); i++) {
+                    ConnectApi.BatchResult batchResult = batchResults[i];
+                    String attemptedProductId = productIdsByIndex[i]; 
+                    
+                    // Check if this batch failed
+                    if (!batchResult.isSuccess()) {
+                        
+                        // Try to get the error object for more details
+                        try {
+                            Object errorObj = batchResult.getError();
+                            if (errorObj != null) {
+                                System.debug('Error Object Type: ' + String.valueOf(errorObj).substring(0, 50));
+                                System.debug('Error Object JSON: ' + JSON.serializePretty(errorObj));
+                            }
+                        } catch (Exception e) {
+                            System.debug('Could not serialize error object: ' + e.getMessage());
+                        }
+                        
+                        failedProducts.add(attemptedProductId);
+                        errorMessages.add(batchResult.getErrorMessage());
+                        
+                        continue; // Skip to next item
+                    }
+                    
+                    // Process successful items
+                    if (batchResult.getResult() instanceof ConnectApi.CartItem) {
+                        ConnectApi.CartItem insertedItem = (ConnectApi.CartItem) batchResult.getResult();
+                        insertedCartItems.put(insertedItem.productId, insertedItem.cartItemId);
+                        
+                        System.debug('Successfully added CartItem ID: ' + insertedItem.cartItemId);
+                        
+                        // Get quote line data for this product
+                        Map<String, Object> quoteLine = productIdToQuoteLine.get(insertedItem.productId);
+                        if (quoteLine != null) {
+                            
+                            CartItem itemToUpdate = new CartItem();
+                            itemToUpdate.Id = insertedItem.cartItemId;
+                            
+                            // Core pricing - what customer pays
+                            Decimal qty = Decimal.valueOf(String.valueOf(quoteLine.get('Quantity')));
+                            Decimal unitPrice = getDecimalValue(quoteLine, 'UnitNetPrice');
+                            Decimal listPrice = getDecimalValue(quoteLine, 'ListPrice');
+                            
+                            // Set prices
+                            itemToUpdate.ListPrice = listPrice;                   
+                            itemToUpdate.SalesPrice = unitPrice;             
+                            itemToUpdate.NetUnitPrice = unitPrice;              
+                            itemToUpdate.UnitAdjustedPrice = unitPrice;      
+                            
+                            // Set totals
+                            itemToUpdate.TotalPrice = unitPrice != null ? unitPrice * qty : null;
+                            itemToUpdate.TotalLineAmount = unitPrice != null ? unitPrice * qty : null;
+                            itemToUpdate.TotalListPrice = listPrice != null ? listPrice * qty : null;
+                            
+                            // Custom fields
+                            itemToUpdate.ECOM_Shipping_Cost__c = getDecimalValue(quoteLine, 'Freight');
+                            
+
+                            // Custom fields
+                            itemToUpdate.ECOM_Shipping_Cost__c = getDecimalValue(quoteLine, 'Freight');
+
+                            // Check with Chirag/manish
+                            // itemToUpdate.Tariff_Surcharge__c = getDecimalValue(quoteLine, 'TariffSurcharge');
+
+                            // Tax 
+                            // Decimal quoteTax = getDecimalValue(quoteLine, 'EffectiveTax');
+                            // if (quoteTax != null && quoteTax != 0) {
+                            //     itemToUpdate.TotalLineTaxAmount = quoteTax;
+                            // }
+
+                            cartItemsToUpdate.add(itemToUpdate);
+                            
+                            System.debug('Prepared price update for CartItem: ' + insertedItem.cartItemId);
+                        }
+                    } else {
+                        System.debug('ERROR: Result is not a CartItem type');
+                    }
+                }
+                
+                // Check if all items failed
+                if (cartItemsToUpdate.isEmpty() && !failedProducts.isEmpty()) {
+                    
+                    response.put('success', false);
+                    response.put('message', 'Failed to add items via Connect API: ' + String.join(errorMessages, '; '));
+                    response.put('failedProducts', failedProducts);
+                    response.put('errorDetails', errorMessages);
+                    
+                    // Log the failure
+                    ECOM_ApplicationLogsUtil.logApplicationApiData(
+                        'Quote to Cart', 
+                        CLASSNAME, 
+                        'addQuoteItemsToCart',
+                        'Failed Products: ' + String.join(failedProducts, ', '),
+                        'Errors: ' + String.join(errorMessages, ' | ')
+                    );
+                    
+                    return response;
+                }
+                
+                // Log partial success
+                if (!failedProducts.isEmpty()) {
+                    System.debug('Failed items: ' + failedProducts.size());
+                }
+            }
+            
+            // Step 8: Update cart items with quote prices
+            if (!cartItemsToUpdate.isEmpty()) {
+                ECOM_CartRepo.updateCartItems(cartItemsToUpdate);
+            }
+            
+            // Step 9: Update cart with quote metadata
+            String quoteNumber = String.valueOf(quoteData.get('Name'));
+            String quoteId = String.valueOf(quoteData.get('Id'));
+            
+            cart.ECOM_Quote_Number__c = quoteNumber;
+            
+            ECOM_CartRepo.updateCart(new List<WebCart>{ cart });
+            
+            // Step 10: Clear session cache
+            ECOM_SessionCacheUtil.clearEcomCache();
+            
+            response.put('success', true);
+            response.put('cartId', cartId);
+            response.put('itemsAdded', cartItemsToUpdate.size());
+            response.put('quoteNumber', quoteNumber);
+            response.put('message', 'Quote items added to cart successfully');
+            
+        } catch (Exception ex) {
+            response.put('success', false);
+            response.put('message', ex.getMessage());
+            ECOM_ApplicationLogsUtil.logFailure(
+                ex, 
+                'Quote to Cart', 
+                CLASSNAME, 
+                'addQuoteItemsToCart', 
+                supportData
+            );
+        }
+        
+        return response;
+    }
+
+    /**
+     * @description Helper to safely get Decimal value from quote line data
+     * @param data Quote line data map
+     * @param fieldName Field name to retrieve
+     * @return Decimal value or null
+     */
+    private static Decimal getDecimalValue(Map<String, Object> data, String fieldName) {
+        Object value = data.get(fieldName);
+        if (value == null) return null;
+        
+        try {
+            if (value instanceof Decimal) {
+                return (Decimal) value;
+            } else if (value instanceof String) {
+                String strValue = (String) value;
+                return String.isBlank(strValue) ? null : Decimal.valueOf(strValue);
+            } else {
+                return Decimal.valueOf(String.valueOf(value));
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -33,13 +33,24 @@
 import { LightningElement, track, api, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getQuoteById from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.fetchMyQuotesWithLines';
-import getCPQQuotesDocumentApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getCPQQuotesDocumentApi';
-import getCPQQuoteStatusApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getCPQQuoteStatusApi';
+//import getCPQQuotesDocumentApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getCPQQuotesDocumentApi';
+//import getCPQQuoteStatusApi from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getCPQQuoteStatusApi';
+import getQuoteDocumentStatus from '@salesforce/apex/ECOM_QuoteController.fetchQuoteDocumentPdf';
+import getQuoteDocumentPDF from '@salesforce/apex/ECOM_QuoteController.fetchQuoteDocumentPdf';
 import getbaseUrl from '@salesforce/apex/ECOM_CPQQuoteDocumentsController.getbaseUrl';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import ssrc_ECOM_Theme from '@salesforce/resourceUrl/ssrc_ECOM_Theme';
+import QuoteDocumentWorkFlowText from '@salesforce/label/c.ECOM_QuoteWorkFlowType_QuoteDocument';
+import QuoteDocumentStatusRequestedYesText from '@salesforce/label/c.ECOM_QuoteDocumentStatusRequested_Yes';
+import QuoteDocumentStatusRequestedNoText from '@salesforce/label/c.ECOM_QuoteDocumentStatusRequested_No';
 
 export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement) {
+
+  label = {
+        QuoteDocumentWorkFlowText,
+        QuoteDocumentStatusRequestedYesText,
+        QuoteDocumentStatusRequestedNoText
+    };
 
   quoteNumber;
   status = 'Active';
@@ -62,6 +73,10 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
     expiresOnClass: 'ecomm-value',
     expiresOn: ''
   };
+
+   QuoteDocumentWorkFlowText = this.label.QuoteDocumentWorkFlowText;
+   QuoteDocumentStatusRequestedYesText = this.label.QuoteDocumentStatusRequestedYesText;
+   QuoteDocumentStatusRequestedNoText = this.label.QuoteDocumentStatusRequestedNoText;
 
   @track
     images = {
@@ -87,40 +102,58 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
   }
 
   /* -- Change By Devanshi Agrawal, RWPS-5263 -- */
-  handleDownload() {
-  
-    this.isLoading = true;
+  async handleDownload() {
+  this.loading = true;
+  try {
+    // Validate quoteId presence
+    if (!this.quoteId) {
+      this.toast('Download failed', 'Missing quote id', 'error');
+      return;
+    }
+      let quoteValueMap = {
+                    varQuoteId : this.quoteId,
+                    varQuoteWorkflowType : this.QuoteDocumentWorkFlowText,
+                    varDocumentStatusRequested : this.QuoteDocumentStatusRequestedNoText
+                  }
+      const dto = await getQuoteDocumentPDF({ requestQuoteMap : quoteValueMap });
+      console.log('dto::::'+JSON.stringify(dto));
+      //if (dto && dto.success && dto.downloadUrl) {
+      if (dto && dto.quoteDocumentBody) {
+        const byteCharacters = atob(dto.quoteDocumentBody);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: dto.contentType || 'application/pdf' });
 
-    getCPQQuotesDocumentApi({ quoteId: this.quoteId })
-        .then(dto => {
-  
-            if (dto?.success === true) {
-                if (dto.publicUrl) {
-                  console.log('[Download] Triggering browser download:', dto.publicUrl);
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = dto.fileName || 'Quote.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        // Use a temporary anchor to trigger a proper download
+        /*const a = document.createElement('a');
+        a.href = dto.downloadUrl;       // e.g., /services/apexrest/cpq/quoteDocument?quoteId=...&download=true
+        a.setAttribute('download', ''); // hint to download
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);*/
+      } else {
+        this.toast('Download failed', dto?.message || 'Unable to get download URL', 'error');
+      }
 
-                  // 🔹 Force download via temporary anchor
-                  const link = document.createElement('a');
-                  link.href = dto.publicUrl;
-                  link.setAttribute('download', ''); // hint to browser
-                  link.style.display = 'none';
-
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                } else {
-                    console.error('[Download] success=true but publicUrl is missing', dto);
-                }
-            } else {
-                console.error('[Download] success=false', dto);
-            }
-        })
-        .catch(error => {
-            console.error('[Download] Apex error:', error);
-        })
-        .finally(() => {
-            this.isLoading = false;
-        });
+  } catch (e) {
+    const msg = (e && e.body && e.body.message) || e?.message || 'Unexpected error';
+    this.toast('Error', msg, 'error');
+  } finally {
+    this.loading = false;
   }
+}
   
   toast(title, message, variant) {
     this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
@@ -134,9 +167,15 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
     try {
       const url = new URL(window.location.href);
       this.quoteId = url.searchParams.get('id');
-      const dto = await getCPQQuoteStatusApi({ quoteId: this.quoteId });
-      if (dto.success) {
-        this.isActive = dto.success;
+      let quoteValueMap = {
+                    varQuoteId : this.quoteId,
+                    varQuoteWorkflowType : this.QuoteDocumentWorkFlowText,
+                    varDocumentStatusRequested : this.QuoteDocumentStatusRequestedYesText
+                  }
+
+      const dto = await getQuoteDocumentStatus({ requestQuoteMap : quoteValueMap });
+      if (dto.outputDocumentStatus) {
+        this.isActive = dto.outputDocumentStatus;
       } else {
         this.isActive = false;
       }
@@ -241,5 +280,5 @@ export default class Ecom_QuoteDetails extends NavigationMixin(LightningElement)
       }
     });
   }
-
+  //test
 }

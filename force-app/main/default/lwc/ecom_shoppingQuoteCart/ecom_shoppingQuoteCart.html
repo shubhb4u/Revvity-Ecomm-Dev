@@ -1,0 +1,78 @@
+<template>
+  <section class="quote-cart">
+
+    <!-- Header -->
+    <div class="quote-header">
+      <h1>Quote number: {quoteNumber}</h1>
+
+      <div class="success-banner">
+        <span class="success-banner-text">Quote has been applied successfully!</span>
+        <span class="close">✕</span>
+      </div>
+    </div>
+
+    <div class="quote-summary-container">
+      <!-- Quote Summary -->
+      <div class="quote-summary-header">
+        <h2>Quote number: {quoteNumber}</h2>
+
+        <div class="quote-pricing">
+          <div class="total">{quoteTotal}</div>
+          <div class="savings">Save {savings}</div>
+        </div>
+      </div>
+
+      <!-- Items table -->
+      <div class="items-table">
+        <!-- Header row -->
+        <div class="row header">
+          <div class="cell index">#</div>
+          <div class="cell name">Name</div>
+          <div class="cell price">Unit list price</div>
+          <div class="cell price">Unit net price</div>
+          <div class="cell qty">Quantity</div>
+          <div class="cell total">Line total</div>
+        </div>
+
+        <!-- Line items -->
+        <template for:each={lineItems} for:item="item">
+          <div key={item.id} class="row row-2line">
+            <!-- Row 1: index + name -->
+            <div class="cell index index-top">{item.serialNumber}.</div>
+
+            <div class="cell name name-top">
+              <div class="line-name">{item.productName}</div>
+            </div>
+
+            <!-- Row 2/3 share index spacer -->
+            <div class="cell index index-bottom"></div>
+
+            <!-- ✅ Row 2: Part# ONLY (stays aligned with pricing row) -->
+            <div class="cell name-meta part-meta">
+              <div class="subtext">
+                Part#: <span class="cellValue">{item.partNumber}</span>
+              </div>
+            </div>
+
+            <!-- Prices stay as-is -->
+            <div class="cell price list-price">{item.unitListPrice}</div>
+            <div class="cell price net-price">{item.unitNetPrice}</div>
+            <div class="cell qty qty-cell">{item.quantity}</div>
+            <div class="cell total total-cell">{item.lineTotal}</div>
+
+            <!-- ✅ Row 3: Description as its own grid item (can span wide) -->
+            <div class="cell desc-meta">
+              <div class="subtext">Product description: {item.description}</div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="remove-action">
+        <a href="javascript:void(0)">🗑 Remove</a>
+      </div>
+
+    </div>
+
+  </section>
+</template>
