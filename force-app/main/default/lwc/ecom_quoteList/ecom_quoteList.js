@@ -6,8 +6,8 @@ import SORT_BY_NEWEST from '@salesforce/label/c.Sort_By_Newest';
 import SORT_BY_ITEMS from '@salesforce/label/c.Sort_By_Number_Of_Items';
 import SORT_BY_TOTAL from '@salesforce/label/c.Sort_By_Quote_Total';
 import communityId from '@salesforce/community/Id';
-import getOrCreateCartSummary from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.getCartSummary';
-import addOrReplaceItemsInCart from '@salesforce/apex/ECOM_CPQQuoteWithLinesProxyController.addOrReplaceQuoteItemsInCart';
+import getOrCreateCartSummary from '@salesforce/apex/ECOM_QuoteController.getCartSummary';
+import addOrReplaceItemsInCart from '@salesforce/apex/ECOM_QuoteController.addOrReplaceQuoteItemsInCart';
 //import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import userId from '@salesforce/user/Id';
 

@@ -2421,7 +2421,7 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
             
             // Step 5: Prepare Connect API batch input
             List<ConnectApi.BatchInput> batchInputs = new List<ConnectApi.BatchInput>();
-            List<String> productIdsByIndex = new List<String>(); // Store productIds in order
+            List<String> productIdsByIndex = new List<String>();
             
             for (Map<String, Object> quoteLine : quoteLines) {
                 String productId = String.valueOf(quoteLine.get('ProductId'));
@@ -2434,7 +2434,7 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
                 
                 ConnectApi.BatchInput batchInput = new ConnectApi.BatchInput(cartInput);
                 batchInputs.add(batchInput);
-                productIdsByIndex.add(productId); // Store productId at same index
+                productIdsByIndex.add(productId);
             }
             
             // Step 6: Insert via Connect API (this auto-creates CartDeliveryGroup)
@@ -2446,14 +2446,14 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
                     batchInputs
                 );
             
-            // Step 7: Update prices from quote
+            // Step 7: Update prices from quote and prepare tax records
             List<CartItem> cartItemsToUpdate = new List<CartItem>();
-            Map<String, String> insertedCartItems = new Map<String, String>(); // productId -> cartItemId
+            List<CartTax> cartTaxesToInsert = new List<CartTax>();
+            Map<String, String> insertedCartItems = new Map<String, String>();
             List<String> failedProducts = new List<String>();
             List<String> errorMessages = new List<String>();
             
             if (batchResults != null) {
-                System.debug('Total batch results: ' + batchResults.size());
                 
                 for (Integer i = 0; i < batchResults.size(); i++) {
                     ConnectApi.BatchResult batchResult = batchResults[i];
@@ -2461,13 +2461,10 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
                     
                     // Check if this batch failed
                     if (!batchResult.isSuccess()) {
-                        
-                        // Try to get the error object for more details
                         try {
                             Object errorObj = batchResult.getError();
                             if (errorObj != null) {
                                 System.debug('Error Object Type: ' + String.valueOf(errorObj).substring(0, 50));
-                                System.debug('Error Object JSON: ' + JSON.serializePretty(errorObj));
                             }
                         } catch (Exception e) {
                             System.debug('Could not serialize error object: ' + e.getMessage());
@@ -2475,8 +2472,7 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
                         
                         failedProducts.add(attemptedProductId);
                         errorMessages.add(batchResult.getErrorMessage());
-                        
-                        continue; // Skip to next item
+                        continue;
                     }
                     
                     // Process successful items
@@ -2484,7 +2480,6 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
                         ConnectApi.CartItem insertedItem = (ConnectApi.CartItem) batchResult.getResult();
                         insertedCartItems.put(insertedItem.productId, insertedItem.cartItemId);
                         
-                        System.debug('Successfully added CartItem ID: ' + insertedItem.cartItemId);
                         
                         // Get quote line data for this product
                         Map<String, Object> quoteLine = productIdToQuoteLine.get(insertedItem.productId);
@@ -2493,41 +2488,42 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
                             CartItem itemToUpdate = new CartItem();
                             itemToUpdate.Id = insertedItem.cartItemId;
                             
-                            // Core pricing - what customer pays
+                            // pricing
                             Decimal qty = Decimal.valueOf(String.valueOf(quoteLine.get('Quantity')));
                             Decimal unitPrice = getDecimalValue(quoteLine, 'UnitNetPrice');
                             Decimal listPrice = getDecimalValue(quoteLine, 'ListPrice');
                             
-                            // Set prices
+                            // prices
                             itemToUpdate.ListPrice = listPrice;                   
                             itemToUpdate.SalesPrice = unitPrice;             
                             itemToUpdate.NetUnitPrice = unitPrice;              
-                            itemToUpdate.UnitAdjustedPrice = unitPrice;      
+                            itemToUpdate.UnitAdjustedPrice = unitPrice;     
                             
-                            // Set totals
+                            // totals
                             itemToUpdate.TotalPrice = unitPrice != null ? unitPrice * qty : null;
                             itemToUpdate.TotalLineAmount = unitPrice != null ? unitPrice * qty : null;
                             itemToUpdate.TotalListPrice = listPrice != null ? listPrice * qty : null;
                             
                             // Custom fields
                             itemToUpdate.ECOM_Shipping_Cost__c = getDecimalValue(quoteLine, 'Freight');
-                            
-
-                            // Custom fields
-                            itemToUpdate.ECOM_Shipping_Cost__c = getDecimalValue(quoteLine, 'Freight');
-
-                            // Check with Chirag/manish
-                            // itemToUpdate.Tariff_Surcharge__c = getDecimalValue(quoteLine, 'TariffSurcharge');
-
-                            // Tax 
-                            // Decimal quoteTax = getDecimalValue(quoteLine, 'EffectiveTax');
-                            // if (quoteTax != null && quoteTax != 0) {
-                            //     itemToUpdate.TotalLineTaxAmount = quoteTax;
-                            // }
 
                             cartItemsToUpdate.add(itemToUpdate);
                             
-                            System.debug('Prepared price update for CartItem: ' + insertedItem.cartItemId);
+                            // CartTax record 
+                            Decimal taxAmount = getDecimalValue(quoteLine, 'Tax');
+                            if (taxAmount == null) {
+                                taxAmount = 0; 
+                            }
+                            
+                            CartTax cartTax = new CartTax();
+                            cartTax.Name = 'Tax';
+                            cartTax.CartItemId = insertedItem.cartItemId;
+                            cartTax.Amount = taxAmount;
+                            cartTax.TaxType = 'Estimated';
+                            cartTax.TaxCalculationDate = Date.today();
+                            cartTax.CurrencyIsoCode = String.valueOf(quoteLine.get('CurrencyIsoCode')); 
+                            
+                            cartTaxesToInsert.add(cartTax);
                         }
                     } else {
                         System.debug('ERROR: Result is not a CartItem type');
@@ -2536,13 +2532,11 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
                 
                 // Check if all items failed
                 if (cartItemsToUpdate.isEmpty() && !failedProducts.isEmpty()) {
-                    
                     response.put('success', false);
                     response.put('message', 'Failed to add items via Connect API: ' + String.join(errorMessages, '; '));
                     response.put('failedProducts', failedProducts);
                     response.put('errorDetails', errorMessages);
                     
-                    // Log the failure
                     ECOM_ApplicationLogsUtil.logApplicationApiData(
                         'Quote to Cart', 
                         CLASSNAME, 
@@ -2553,16 +2547,16 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
                     
                     return response;
                 }
-                
-                // Log partial success
-                if (!failedProducts.isEmpty()) {
-                    System.debug('Failed items: ' + failedProducts.size());
-                }
             }
             
             // Step 8: Update cart items with quote prices
             if (!cartItemsToUpdate.isEmpty()) {
                 ECOM_CartRepo.updateCartItems(cartItemsToUpdate);
+            }
+            
+            // Step 8.5: Insert CartTax records
+            if (!cartTaxesToInsert.isEmpty()) {
+                insert cartTaxesToInsert;
             }
             
             // Step 9: Update cart with quote metadata
@@ -2579,6 +2573,7 @@ public with sharing class ECOM_CartService implements ECOM_ICartService{
             response.put('success', true);
             response.put('cartId', cartId);
             response.put('itemsAdded', cartItemsToUpdate.size());
+            response.put('taxRecordsCreated', cartTaxesToInsert.size());
             response.put('quoteNumber', quoteNumber);
             response.put('message', 'Quote items added to cart successfully');
             

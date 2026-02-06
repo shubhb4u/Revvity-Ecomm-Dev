@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Get_Active_and_Expired_Quotes</name>
+        <label>Get Active and Expired Quotes</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>ExecuteSOQL</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Iterate_CPQ_Quote_List</targetReference>
+        </connector>
+        <dataTypeMappings>
+            <typeName>U__sObjects</typeName>
+            <typeValue>SBQQ__Quote__c</typeValue>
+        </dataTypeMappings>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>soqlQuery</name>
+            <value>
+                <elementReference>fetchQuotes</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>ExecuteSOQL</nameSegment>
+        <offset>0</offset>
+        <outputParameters>
+            <assignToReference>cpqQuoteList</assignToReference>
+            <name>sObjects</name>
+        </outputParameters>
+    </actionCalls>
+    <apiVersion>66.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Add_QuoteId_to_QuoteIdList</name>
+        <label>Add QuoteId to QuoteIdList</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>cpqQuoteIdList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>cpqQuoteId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Iterate_CPQ_Quote_List</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_QuoteId_From_QuoteList</name>
+        <label>Assign QuoteId From QuoteList</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>cpqQuoteId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Iterate_CPQ_Quote_List.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_QuoteId_to_QuoteIdList</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Decide_Contact_Id_Exist</name>
+        <label>Decide Contact Id Exist</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Contact_Id_Exist</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varContactId</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Active_and_Expired_Quotes</targetReference>
+            </connector>
+            <label>Contact Id Exist</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decide_Quote_WorkFlow_Type</name>
+        <label>Decide Quote WorkFlow Type</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Quote_With_Lines</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varQuoteWorkflowType</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Quote With Lines</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decide_Contact_Id_Exist</targetReference>
+            </connector>
+            <label>Quote With Lines</label>
+        </rules>
+        <rules>
+            <name>Get_Quote_Document</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varQuoteWorkflowType</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Quote Document</stringValue>
+                </rightValue>
+            </conditions>
+            <label>Get Quote Document</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>fetchQuotes</name>
+        <dataType>String</dataType>
+        <expression>
+&quot;SELECT Id, Name, SBQQ__ExpirationDate__c, SBQQ__Primary__c, SBQQ__NetAmount__c, &quot; &amp;
+&quot;SBQQ__LineItemCount__c, SBQQ__Status__c, CreatedDate, fxFreightDisplayedAmount__c, &quot; &amp;
+&quot;TotalTax__c, fxGrand_Total__c, Total_Discount__c, Country_List_Price_Total__c, &quot; &amp;
+&quot;SBQQ__Opportunity2__r.Sold_To_ERP_Address__r.fxAddressFull__c, &quot; &amp;
+&quot;SBQQ__Opportunity2__r.Payer_ERP_Address__r.fxAddressFull__c &quot; &amp;
+&quot;FROM SBQQ__Quote__c &quot; &amp;
+&quot;WHERE SBQQ__PrimaryContact__c = &apos;&quot; &amp; {!varContactId} &amp; &quot;&apos; &quot; &amp;
+&quot;AND SBQQ__PrimaryContact__r.Email != null &quot; &amp;
+&quot;AND SAPQuoteID__c != null &quot; &amp;
+&quot;AND ( &quot; &amp;
+&quot;    (SBQQ__Primary__c = true  AND SBQQ__ExpirationDate__c &gt;= &quot; &amp; TEXT(TODAY()) &amp; &quot;) &quot; &amp;
+&quot;    OR &quot; &amp;
+&quot;    (SBQQ__Primary__c = false AND SBQQ__ExpirationDate__c &gt;= &quot; &amp; TEXT(TODAY()) &amp; &quot;) &quot; &amp;
+&quot;    OR &quot; &amp;
+&quot;    (SBQQ__Primary__c = true  AND SBQQ__ExpirationDate__c &lt;  &quot; &amp; TEXT(TODAY()) &amp; &quot; &quot; &amp;
+&quot;                           AND SBQQ__ExpirationDate__c &gt;= &quot; &amp; TEXT(ADDMONTHS(TODAY(), -12)) &amp; &quot;) &quot; &amp;
+&quot;)&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>soqlQuote</name>
+        <dataType>String</dataType>
+        <expression>
+&quot;SELECT Id, Name, SBQQ__ExpirationDate__c, SBQQ__Primary__c, SBQQ__NetAmount__c, &quot; &amp;
+&quot;SBQQ__LineItemCount__c, SBQQ__Status__c, CreatedDate, fxFreightDisplayedAmount__c, &quot; &amp;
+&quot;TotalTax__c, fxGrand_Total__c, Total_Discount__c, Country_List_Price_Total__c, &quot; &amp;
+&quot;SBQQ__Opportunity2__r.Sold_To_ERP_Address__r.fxAddressFull__c, &quot; &amp;
+&quot;SBQQ__Opportunity2__r.Payer_ERP_Address__r.fxAddressFull__c &quot; &amp;
+&quot;FROM SBQQ__Quote__c &quot; &amp;
+&quot;WHERE SBQQ__PrimaryContact__c = &apos;&quot; &amp; {!varContactId} &amp; &quot;&apos; &quot; &amp;
+&quot;AND SBQQ__PrimaryContact__r.Email != null &quot; &amp;
+&quot;AND SAPQuoteID__c != null &quot; &amp;
+&quot;AND ( &quot; &amp;
+&quot;     OR (SBQQ__Primary__c = true &quot; &amp; &quot; AND SBQQ__ExpirationDate__c &lt; TODAY &quot; &amp;&quot; ) &quot; &amp;
+&quot;     OR (SBQQ__Primary__c = false&quot; &amp; &quot; AND SBQQ__ExpirationDate__c &lt; TODAY &quot; &amp;&quot; ) &quot; &amp;
+&quot;     OR (SBQQ__Primary__c = false&quot; &amp; &quot; AND SBQQ__ExpirationDate__c &lt; TODAY &quot;  &amp;  &quot;   AND SBQQ__ExpirationDate__c  &gt;= TEXT(ADDMONTHS(TODAY(), -12))) &quot; &amp;
+&quot;)&quot;</expression>
+    </formulas>
+    <interviewLabel>SUB.FLOW_NNNN: CPQ Quote {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SUB.FLOW_NNNN: Fetch CPQ Quote With Quote Lines</label>
+    <loops>
+        <name>Iterate_CPQ_Quote_List</name>
+        <label>Iterate CPQ Quote List</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>cpqQuoteList</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_QuoteId_From_QuoteList</targetReference>
+        </nextValueConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Decide_Quote_WorkFlow_Type</targetReference>
+        </connector>
+    </start>
+    <status>Draft</status>
+    <variables>
+        <name>cpqQuoteId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cpqQuoteIdList</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cpqQuoteList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>SBQQ__Quote__c</objectType>
+    </variables>
+    <variables>
+        <name>QuoteLinesList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>SBQQ__QuoteLine__c</objectType>
+    </variables>
+    <variables>
+        <name>QuoteList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>SBQQ__Quote__c</objectType>
+    </variables>
+    <variables>
+        <name>varContactId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varQuoteId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varQuoteLine</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varQuoteLineJsonArray</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varQuoteLineList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>SBQQ__QuoteLine__c</objectType>
+    </variables>
+    <variables>
+        <name>varQuoteWithLines</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varQuoteWithLinesArray</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>varQuoteWorkflowType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>
